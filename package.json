@@ -1,0 +1,29 @@
+{
+	"name": "anubis",
+	"version": "1.0.0",
+	"description": "Scan a Python MCP repository for prompt injection in tool descriptions",
+	"main": "index.js",
+	"bin": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.6.5",
+	"dependencies": {
+		"@ai-sdk/openai": "^1.3.21",
+		"ai": "^4.3.11",
+		"commander": "^13.1.0",
+		"dotenv": "^16.5.0",
+		"simple-git": "^3.27.0",
+		"zod": "^3.24.3"
+	},
+	"devDependencies": {
+		"@types/node": "^22.15.3",
+		"tsx": "^4.19.4",
+		"typescript": "^5.8.3"
+	}
+}
