@@ -27,6 +27,7 @@ export function parseMCPTools(code: string): ToolInfo[] {
 	const tools: ToolInfo[] = [];
 
 	for (let i = 0; i < lines.length; i++) {
+		// 	TODO check this definition of mcp server because it can change depending of the name of the mcp server
 		if (/@tools_mcp\.tool\s*\(/.test(lines[i])) {
 			// Find the next "def" line
 			let j = i + 1;
