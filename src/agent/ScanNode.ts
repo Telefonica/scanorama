@@ -1,9 +1,13 @@
 import { FileBrowserTool } from '../tools/FileBrowserTool';
 import { AgentState, MCPTool } from '../types/State';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { HumanMessage } from '@langchain/core/messages';
 
-export const ScanNode = async (state: AgentState, config: { llm: BaseChatModel }) => {
-	const llm = config.llm;
+export const ScanNode = async (
+	state: AgentState,
+	config: { llm: BaseChatModel }
+): Promise<Partial<AgentState>> => {
+	const { llm } = config;
 	const fb = new FileBrowserTool();
 	const allFiles = await fb.listFiles(state.repoPath);
 
@@ -27,20 +31,32 @@ Examples:
 - Java/Kotlin: @Tool(name="...", description="...").
 - C#: [McpServerTool, Description("...")].
 
-For each tool, output a JSON object with:
+For each tool, output a JSON array of objects with:
 - name: The tool's name.
 - description: The tool's description.
 
 File content:
 ${content}
 
-Respond with a JSON array of tool objects, each with "name" and "description" fields. If no tools are found, return an empty array [].
-    `;
+If no tools are found, return an empty array [].
+    `.trim();
 
-		const response = await llm.invoke(extractionPrompt);
-		const extracted: MCPTool[] = JSON.parse(response.content as string);
-		extracted.forEach(t => newTools.push({ ...t, location: file }));
+		// wrap as a HumanChatMessage
+		const response = await llm.invoke([
+			new HumanMessage(extractionPrompt),
+		]);
+
+		// guaranteed JSON because you bound response_format to json_object
+		const extracted: MCPTool[] = JSON.parse(response.content);
+
+		console.dir(response)
+		console.dir(extracted)
+
+		for (const t of extracted) {
+			newTools.push({ ...t, location: file });
+		}
 	}
 
 	return { tools: newTools };
 };
+

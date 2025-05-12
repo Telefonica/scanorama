@@ -14,3 +14,5 @@ export interface AgentState {
 	tools: MCPTool[];
 	results: AnalysisResult[];
 }
+
+export type AgentUpdate = Partial<AgentState>

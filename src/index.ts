@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import * as dotenv from 'dotenv';
-import simpleGit from 'simple-git'; // Correct import as default export
+import simpleGit from 'simple-git';
 import { ChatOpenAI } from '@langchain/openai';
 import { Agent } from './agent/Agent';
 import * as fs from 'fs';
@@ -28,7 +28,7 @@ if (!process.env.OPENAI_API_KEY) {
 	if (opts.clone) {
 		const tmp = fs.mkdtempSync(path.join((await import('os')).tmpdir(), 'anubis-'));
 		console.log(`Cloning ${opts.clone} → ${tmp}`);
-		await simpleGit().clone(opts.clone, tmp); // Correct usage of simple-git
+		await simpleGit().clone(opts.clone, tmp);
 		repoPath = tmp;
 	}
 	if (!repoPath) {
@@ -36,7 +36,14 @@ if (!process.env.OPENAI_API_KEY) {
 		process.exit(1);
 	}
 
-	const llm = new ChatOpenAI({ apiKey: process.env.OPENAI_API_KEY, model: 'gpt-4o' });
+	const llm = new ChatOpenAI({
+		apiKey: process.env.OPENAI_API_KEY,
+		model: "gpt-4o",
+	})
+		// turn on JSON mode so the model emits strict JSON
+		.bind({
+			response_format: { type: "json_object" },
+		});
 	const agent = new Agent(repoPath, llm);
 	const results = await agent.run();
 

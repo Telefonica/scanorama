@@ -5,60 +5,52 @@ import {
 	END,
 	CompiledStateGraph,
 } from '@langchain/langgraph';
-import { BaseChatModel } from '@langchain/core/language_models/chat_models';
+import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { ScanNode } from './ScanNode';
 import { AnalyzeNode } from './AnalyzeNode';
-import type { Tool } from '../types/Tool';
-import type { AnalysisResult } from '../types/AnalysisResult';
+import type { MCPTool, AnalysisResult } from '../types/State';
 
+// Each Annotation<T> needs a `value:` reducer, and may optionally have a `default: () => T`
 const StateAnnotation = Annotation.Root({
 	repoPath: Annotation<string>({
-		default: () => '',                          // will be overridden at runtime
-		description: 'The path to the repository',
+		// always take whatever we seed at invoke()
+		value: (_old, incoming) => incoming,
 	}),
-	tools: Annotation<Tool[]>({
+	tools: Annotation<MCPTool[]>({
+		value: (existing, incoming) => [...existing, ...incoming],
 		default: () => [],
-		reducer: (left, right) => [...left, ...right],
-		description: 'Tools to pass into each node',
 	}),
 	results: Annotation<AnalysisResult[]>({
+		value: (_old, incoming) => incoming,
 		default: () => [],
-		reducer: (_old, incoming) => incoming,
-		description: 'The final analysis results',
 	}),
 });
 
-// Extracted TS types for convenience
-type State = typeof StateAnnotation.State;       // { repoPath: string; tools: Tool[]; results: AnalysisResult[] }
-type Update = typeof StateAnnotation.Update;     // Partial<State>
+// TS will infer:
+type State = typeof StateAnnotation.State;   // { repoPath: string; tools: MCPTool[]; results: AnalysisResult[] }
+type Update = typeof StateAnnotation.Update;  // Partial<State>
 
 export class Agent {
 	private compiled: CompiledStateGraph<State, Update, string>;
 
 	constructor(private repoPath: string, private llm: BaseChatModel) {
-		// Patch the default repoPath into the annotation
-		StateAnnotation.definition.repoPath.default = () => this.repoPath;
-
-		// Build the graph
 		const builder = new StateGraph(StateAnnotation)
-			.addNode('scan', (state: State) => ScanNode(state, { llm: this.llm }))
-			.addNode('analyze', (state: State) => AnalyzeNode(state, { llm: this.llm }))
+			.addNode('scan', state => ScanNode(state, { llm: this.llm }))
+			.addNode('analyze', state => AnalyzeNode(state, { llm: this.llm }))
 			.addEdge(START, 'scan')
 			.addEdge('scan', 'analyze')
 			.addEdge('analyze', END);
 
-		// Compile it
 		this.compiled = builder.compile();
 	}
 
-	/**
-	 * Kick off the graph from an empty initial state.
-	 * Returns whatever ended up in `results`.
+	/** 
+	 * Kick off the graph, seeding repoPath in the initial state. 
+	 * (Nodes already have `llm` closed over from the ctor.)
 	 */
 	public async run(): Promise<AnalysisResult[]> {
-		// You must seed all keys of your state if you want to pass an initial value,
-		// but since we provided defaults in the Annotation, we can just pass `{}`.
-		const finalState = await this.compiled.invoke({}, { llm: this.llm });
+		const initial: Partial<State> = { repoPath: this.repoPath };
+		const finalState = await this.compiled.invoke(initial);
 		return finalState.results;
 	}
 }
