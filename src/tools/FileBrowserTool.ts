@@ -1,11 +1,7 @@
-import { Tool } from '@langchain/core';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export class FileBrowserTool extends Tool {
-	name = 'fileBrowser';
-	description = 'List and read files in a directory, excluding .git, node_modules';
-
+export class FileBrowserTool {
 	async listFiles(basePath: string): Promise<string[]> {
 		const results: string[] = [];
 		const walk = (dir: string) => {

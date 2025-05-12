@@ -1,7 +1,7 @@
 {
 	"name": "anubis",
 	"version": "1.0.0",
-	"description": "Scan a Python MCP repository for prompt injection in tool descriptions",
+	"description": "Scan a MCP repository for prompt injection in tool descriptions",
 	"main": "index.js",
 	"bin": "dist/index.js",
 	"scripts": {
