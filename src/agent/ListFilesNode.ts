@@ -5,7 +5,7 @@ export const listFilesNode = async (
 	state: GraphState,
 	fileBrowserTool: FileBrowserTool
 ): Promise<GraphUpdate> => {
-	console.log("--- Entering ListFilesNode ---");
+	//console.log("--- Entering ListFilesNode ---");
 	try {
 		const allFiles = await fileBrowserTool.listFiles(state.repoPath);
 		// Filter for relevant extensions
@@ -14,8 +14,12 @@ export const listFilesNode = async (
 			return ['py', 'ts', 'js', 'java', 'kt', 'cs'].includes(ext!);
 		});
 
-		console.log(`Found ${sourceFiles.length} source files to scan.`);
-		console.dir(sourceFiles)
+		if (sourceFiles.length > 0) {
+			console.log(`Found ${sourceFiles.length} source files to scan.`);
+			console.dir(sourceFiles);
+		} else {
+			console.warn("\x1b[43mDidnt found source files to scan\x1b[0m")
+		}
 		return {
 			allSourceFiles: sourceFiles,
 			remainingFilesToScan: [...sourceFiles] // Initialize remaining files

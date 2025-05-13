@@ -10,7 +10,8 @@ export const scanFileNode = async (
 	fileBrowserTool: FileBrowserTool,
 	filePathToScan: string
 ): Promise<GraphUpdate> => {
-	console.log(`\n--- Entering ScanFileNode for: ${filePathToScan} ---`);
+	//console.log(`\n--- Entering ScanFileNode for: ${filePathToScan} ---`);
+	console.log(`\n\x1b[31mScanning\x1b[0m source file: (${filePathToScan})...`);
 	// Rely on graph logic to ensure filePathToScan is valid.
 	// The conditional edge from listFiles and the loop condition in Agent.ts
 	// should prevent this node from being called with an undefined/empty filePathToScan
@@ -104,7 +105,9 @@ JSON Output (a single JSON object with a "tools" key):
 			location: filePathToScan,
 		}));
 
-		console.log(`Found ${newTools.length} tools in ${filePathToScan}.`);
+		if (newTools.length > 0) console.log(`\x1b[42mFound ${newTools.length} tools in ${filePathToScan}.  \x1b[0m`);
+		else console.warn("\x1b[43mDidnt find source files to scan\x1b[0m");
+
 		return {
 			mcpTools: newTools,
 			currentFileProcessed: filePathToScan,

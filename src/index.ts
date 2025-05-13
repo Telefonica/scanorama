@@ -32,10 +32,10 @@ if (!process.env.OPENAI_API_KEY) {
 		if (opts.clone) {
 			const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'anubis-scan-'));
 			tempDirToRemove = tmp;
-			console.log(`Cloning ${opts.clone} into ${tmp}...`);
+			console.log(`\x1b[31mClonning \x1b[0m \x1b[34m${opts.clone} \x1b[0m into \x1b[34m ${tmp}...\x1b[0m`)
 			await simpleGit().clone(opts.clone, tmp);
 			repoPath = tmp;
-			console.log('Cloning complete.');
+			console.log('\x1b[42mCloning completed!!!\x1b[0m');
 		}
 
 		if (!repoPath) {
@@ -44,7 +44,7 @@ if (!process.env.OPENAI_API_KEY) {
 			process.exit(1);
 		}
 
-		console.log(`Scanning repository at: ${repoPath}`);
+		console.log(`\n\x1b[31mScanning\x1b[0m repository at: ${repoPath}`);
 
 		const llm = new ChatOpenAI({
 			apiKey: process.env.OPENAI_API_KEY,
@@ -57,17 +57,18 @@ if (!process.env.OPENAI_API_KEY) {
 		const agent = new Agent(llm); // Pass LLM to constructor
 		const results = await agent.run(repoPath); // Pass repoPath to run method
 
-		console.log("\n--- Analysis Report ---");
+		console.log("\n--- REPORT ---");
 		if (results.length === 0) {
 			console.log("No MCP tools found or no risks identified in analyzed tools.");
 		} else {
-			for (const r of results) {
-				console.log(`\nTool: ${r.name}`);
-				console.log(`  Location: ${r.location}`);
-				console.log(`  Description: ${r.description.substring(0, 100)}${r.description.length > 100 ? '...' : ''}`);
-				console.log(`  Risky: ${r.risky ? 'Yes' : 'No'}`);
-				console.log(`  Explanation: ${r.explanation}`);
-			}
+			//for (const r of results) {
+			//	console.log(`\nTool: ${r.name}`);
+			//	console.log(`  Location: ${r.location}`);
+			//	console.log(`  Description: ${r.description.substring(0, 100)}${r.description.length > 100 ? '...' : ''}`);
+			//	console.log(`  Risky: ${r.risky ? 'Yes' : 'No'}`);
+			//	console.log(`  Explanation: ${r.explanation}`);
+			//}
+			console.dir(results)
 		}
 
 		if (opts.output) {
