@@ -11,11 +11,10 @@ export const scanFileNode = async (
 	filePathToScan: string
 ): Promise<GraphUpdate> => {
 	console.log(`\n--- Entering ScanFileNode for: ${filePathToScan} ---`);
-	if (!filePathToScan) {
-		console.log("ScanFileNode: No file path provided, skipping.");
-		// This case should ideally be handled by graph logic, but as a safeguard:
-		return { remainingFilesToScan: undefined }; // Signal to stop or clear
-	}
+	// Rely on graph logic to ensure filePathToScan is valid.
+	// The conditional edge from listFiles and the loop condition in Agent.ts
+	// should prevent this node from being called with an undefined/empty filePathToScan
+	// if remainingFilesToScan is empty.
 
 	try {
 		const fileContent = await fileBrowserTool.readFile(filePathToScan);
@@ -35,13 +34,14 @@ Look for patterns such as:
 For each tool found, provide its name and its exact description.
 The description is critical as it's the part that might be used for prompt injection.
 
-Respond with a JSON array of objects, where each object has the following structure:
+Respond with a single JSON object. This object should have a key named "tools" which contains an array of objects.
+Each object in the "tools" array should have the following structure:
 {
   "name": "tool_name_here",
   "description": "tool_description_here"
 }
 
-If no MCP tools are found in this file, return an empty JSON array [].
+If no MCP tools are found in this file, the "tools" key should contain an empty JSON array [].
 
 File Path: ${filePathToScan}
 File Content:
@@ -49,55 +49,66 @@ File Content:
 ${fileContent}
 \`\`\`
 
-JSON Output:
+JSON Output (a single JSON object with a "tools" key):
 `;
 
 		const response = await llm.invoke([new HumanMessage(extractionPrompt)]);
+		// console.log(`LLM raw response for ${filePathToScan}:`, response.content); // Optional: for debugging
+
+		let parsedResponse: any;
 		let extractedRaw: { name: string; description: string }[] = [];
 
 		if (typeof response.content === 'string') {
 			try {
-				// Attempt to parse the string content as JSON
-				extractedRaw = JSON.parse(response.content);
+				parsedResponse = JSON.parse(response.content);
 			} catch (e: any) {
-				// If parsing fails, try to find JSON within common markdown code blocks
 				const jsonMatch = response.content.match(/```json\n([\s\S]*?)\n```/);
 				if (jsonMatch && jsonMatch[1]) {
 					try {
-						extractedRaw = JSON.parse(jsonMatch[1]);
+						parsedResponse = JSON.parse(jsonMatch[1]);
 					} catch (e2: any) {
-						console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan} after markdown extraction: ${e2.message}`);
+						console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan} after markdown extraction: ${e2.message}. Raw content: ${response.content}`);
 						return {
-							errorMessages: [`LLM response parsing error for ${filePathToScan}: ${e2.message}`],
+							errorMessages: [`LLM response parsing error (markdown) for ${filePathToScan}: ${e2.message}`],
 							currentFileProcessed: filePathToScan,
-							remainingFilesToScan: state.remainingFilesToScan.slice(1) // Move to next file
+							remainingFilesToScan: state.remainingFilesToScan.slice(1),
+							mcpTools: [], // Ensure we return empty tools on error
 						};
 					}
 				} else {
-					console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan}: ${e.message}. Response: ${response.content}`);
+					console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan}: ${e.message}. Raw content: ${response.content}`);
 					return {
 						errorMessages: [`LLM response parsing error for ${filePathToScan}: ${e.message}`],
 						currentFileProcessed: filePathToScan,
-						remainingFilesToScan: state.remainingFilesToScan.slice(1) // Move to next file
+						remainingFilesToScan: state.remainingFilesToScan.slice(1),
+						mcpTools: [], // Ensure we return empty tools on error
 					};
 				}
 			}
 		} else {
-			// if response.content is already an object (though less likely with ChatOpenAI default)
-			extractedRaw = response.content as { name: string; description: string }[];
+			// If response.content is already an object (less common with ChatOpenAI default string output but good to handle)
+			parsedResponse = response.content;
 		}
 
+		// Ensure parsedResponse is an object and has the 'tools' key which is an array
+		if (parsedResponse && typeof parsedResponse === 'object' && Array.isArray(parsedResponse.tools)) {
+			extractedRaw = parsedResponse.tools;
+		} else {
+			console.warn(`ScanFileNode: LLM response for ${filePathToScan} was not in the expected format (object with a 'tools' array). Response:`, JSON.stringify(parsedResponse, null, 2));
+			// extractedRaw remains [], which is the correct default.
+		}
 
 		const newTools: MCPTool[] = extractedRaw.map(tool => ({
-			...tool,
+			name: String(tool.name || "Unknown Tool"), // Ensure name is a string
+			description: String(tool.description || ""), // Ensure description is a string
 			location: filePathToScan,
 		}));
 
 		console.log(`Found ${newTools.length} tools in ${filePathToScan}.`);
 		return {
-			mcpTools: newTools, // These will be appended to the global list by the graph
+			mcpTools: newTools,
 			currentFileProcessed: filePathToScan,
-			remainingFilesToScan: state.remainingFilesToScan.slice(1) // "Consume" the processed file
+			remainingFilesToScan: state.remainingFilesToScan.slice(1)
 		};
 
 	} catch (error: any) {
@@ -105,7 +116,8 @@ JSON Output:
 		return {
 			errorMessages: [`Failed to scan file ${filePathToScan}: ${error.message}`],
 			currentFileProcessed: filePathToScan,
-			remainingFilesToScan: state.remainingFilesToScan.slice(1) // Ensure we move to the next file
+			remainingFilesToScan: state.remainingFilesToScan.slice(1),
+			mcpTools: [], // Ensure we return empty tools on error
 		};
 	}
 };
