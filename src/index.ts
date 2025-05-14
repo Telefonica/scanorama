@@ -57,7 +57,7 @@ if (!process.env.OPENAI_API_KEY) {
 		const agent = new Agent(llm); // Pass LLM to constructor
 		const results = await agent.run(repoPath); // Pass repoPath to run method
 
-		console.log("\n--- REPORT ---");
+		console.log('\n\x1b[42m--- REPORT ---\x1b[0m');
 		if (results.length === 0) {
 			console.log("No MCP tools found or no risks identified in analyzed tools.");
 		} else {

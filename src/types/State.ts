@@ -5,6 +5,6 @@ export interface MCPTool {
 }
 
 export interface AnalysisResult extends MCPTool {
-	risky: boolean;
+	injectionType: "Injection" | "No-Injection" | "Unknown";
 	explanation: string;
 }

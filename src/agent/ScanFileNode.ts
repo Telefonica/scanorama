@@ -106,7 +106,7 @@ JSON Output (a single JSON object with a "tools" key):
 		}));
 
 		if (newTools.length > 0) console.log(`\x1b[42mFound ${newTools.length} tools in ${filePathToScan}.  \x1b[0m`);
-		else console.warn("\x1b[43mDidnt find source files to scan\x1b[0m");
+		else console.warn("\x1b[43mDidnt find tools to analyze\x1b[0m");
 
 		return {
 			mcpTools: newTools,
