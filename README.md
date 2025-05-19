@@ -51,20 +51,11 @@ Scanorama uses a multi-step process, like an automated assembly line, to find an
     *   First, Scanorama looks through your project to find all the important source code files (like Python, TypeScript, Java files, etc.).
 
 2.  **Step 2: Extract Tool Details - One File at a Time (`scanFileNode`)**
-    *   For *each* code file found in Step 1, Scanorama does the following:
-        *   Reads the content of the file.
-        *   Asks a Large Language Model (LLM, like GPT-4o) to carefully read this specific file's code and pick out any Model Context Protocol (MCP) tool definitions.
-        *   The LLM sends back the `name` and `description` of any tools it finds in that file.
-    *   Scanorama collects all these tool details from all the files it checks.
+    * Decide what file should scan of the project and if find `MCP tools` it saves its description and name and continue searching through files until it decides to finish.
 
 3.  **Step 3: Analyze Tool Descriptions for Risks (`analyzeToolsNode`)**
     *   Once Scanorama has checked all the files and gathered all the tool names and descriptions, it moves to the final step.
-    *   It takes all the tool descriptions it found.
-    *   It asks an LLM (acting as a security expert) to examine *each tool's description*.
-    *   The LLM looks for any signs that a description might be trying to trick or manipulate an AI agent (this is called "prompt injection").
-    *   Finally, Scanorama reports what the LLM found, highlighting any risky tool descriptions.
-
-**In Short:** Scanorama first finds your code, then uses an LLM to pull out tool details from each file, and finally uses an LLM again to check those tool descriptions for security vulnerabilities.
+    *   It takes all the tool descriptions it found and search thorughth the tools to find prompt injections to that could modify the default behavior of an agent using the mcp.
 
 ## What is the Model Context Protocol (MCP)?
 
