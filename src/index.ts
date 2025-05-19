@@ -1,4 +1,4 @@
-#!/usr/bin / env node
+#!/usr/bin/env node
 
 /**
 © 2025 Telefónica Innovación Digital S.L.
@@ -39,7 +39,7 @@ if (!process.env.OPENAI_API_KEY) {
 	let repoPath = opts.path;
 	try {
 		if (opts.clone) {
-			const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'anubis-scan-'));
+			const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'scanorama-scan-'));
 			console.log(`\x1b[31mClonning \x1b[0m \x1b[34m${opts.clone} \x1b[0m into \x1b[34m ${tmp}...\x1b[0m`)
 			await simpleGit().clone(opts.clone, tmp);
 			repoPath = tmp;
