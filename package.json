@@ -1,13 +1,14 @@
 {
-	"name": "anubis",
+	"name": "scanorama",
 	"version": "1.0.0",
-	"description": "Scan a MCP repository for prompt injection in tool descriptions",
-	"main": "index.js",
+	"description": "Scan a MCP repositories searching for prompt injection in tool descriptions that could lead to modifications in agents default behaviors",
+	"homepage": "https://github.com/Telefonica/scanorama/",
+	"main": "dist/index.js",
 	"bin": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
 		"start": "node dist/index.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"prepublishOnly": "pnpm build"
 	},
 	"packageManager": "pnpm@10.6.5",
 	"dependencies": {
@@ -22,5 +23,34 @@
 		"@types/node": "^22.15.3",
 		"tsx": "^4.19.4",
 		"typescript": "^5.8.3"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Telefonica/scanorama"
+	},
+	"keywords": [
+		"mcp",
+		"prompt injection",
+		"security",
+		"llm",
+		"langchain",
+		"langgraph",
+		"cli",
+		"cibersecurity",
+		"mcp agent"
+	],
+	"author": "LightingLab Telefonica Inovacion Digital <lightinglab@telefonica.com> (https://telefonica.com)",
+	"license": "LGPL 3.0",
+	"bugs": {
+		"url": "https://github.com/Telefonica/scanorama/issues",
+		"email": "lightinglab@telefonica.com"
 	}
 }

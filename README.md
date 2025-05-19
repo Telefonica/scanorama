@@ -43,23 +43,28 @@ At the heart of _Scanorama_ is a **specialized agent** designed for **code secur
     <img src="./media/architecture.png" alt="Scanorama architecture" width="700"/>
 </div>
 
-#### 🧩 Node breakdown
+#### 🧩 Agent Workflow: How Scanorama Analyzes Your Code
 
-- **Node 1: File enumeration**
+Scanorama uses a multi-step process, like an automated assembly line, to find and analyze your MCP tools:
 
-  - Lists all files in the repository (local or from GitHub).
-  - Filters and returns only those that are relevant for analysis (e.g., `.py`, `.ts`, `.kt`, etc.).
-    > **Note:** The tool is able to identify which files are relevant for the analysis and discard irrelevant ones (`node_modules`, `__tests__`, ...).
+1.  **Step 1: Find the Code Files (`listFilesNode`)**
+    *   First, Scanorama looks through your project to find all the important source code files (like Python, TypeScript, Java files, etc.).
 
-- **Node 2: Tool extraction**
+2.  **Step 2: Extract Tool Details - One File at a Time (`scanFileNode`)**
+    *   For *each* code file found in Step 1, Scanorama does the following:
+        *   Reads the content of the file.
+        *   Asks a Large Language Model (LLM, like GPT-4o) to carefully read this specific file's code and pick out any Model Context Protocol (MCP) tool definitions.
+        *   The LLM sends back the `name` and `description` of any tools it finds in that file.
+    *   Scanorama collects all these tool details from all the files it checks.
 
-  - Scans the code to detect MCP tool definitions.
-  - Extracts function names and natural language descriptions of the tools.
+3.  **Step 3: Analyze Tool Descriptions for Risks (`analyzeToolsNode`)**
+    *   Once Scanorama has checked all the files and gathered all the tool names and descriptions, it moves to the final step.
+    *   It takes all the tool descriptions it found.
+    *   It asks an LLM (acting as a security expert) to examine *each tool's description*.
+    *   The LLM looks for any signs that a description might be trying to trick or manipulate an AI agent (this is called "prompt injection").
+    *   Finally, Scanorama reports what the LLM found, highlighting any risky tool descriptions.
 
-- **Node 3: Security analysis**
-
-  - Uses the **selected model and provider** (OpenAI, Anthropic, etc.) to evaluate each tool.
-  - Detects potential risks and generates a report.
+**In Short:** Scanorama first finds your code, then uses an LLM to pull out tool details from each file, and finally uses an LLM again to check those tool descriptions for security vulnerabilities.
 
 ## What is the Model Context Protocol (MCP)?
 
@@ -123,13 +128,20 @@ You can analyze tools either from a GitHub URL or a local directory:
 ### Scan from GitHub
 
 ```bash
-scanorama --url <GITHUB_REPO_URL>
+scanorama --clone <GITHUB_REPO_URL>
 ```
 
 ### Scan from local directory
 
 ```bash
 scanorama --path <LOCAL_DIRECTORY>
+```
+
+### Save report
+Supports saving into a json format the generated report
+
+```bash
+scanorama ... --output <filename>
 ```
 
 Use the `--help` flag to explore all available options:
