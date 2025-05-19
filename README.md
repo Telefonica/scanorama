@@ -18,7 +18,7 @@
 
 ## Why scan MCP servers ?
 
-With MCP server the behavior of LLM agents can be modified by third parties through prompt injection by MCP protocol using prompt injection in the MCP tools description, MCP clients (agents) list and use the tools of MCP servers, the list of tools and its description goes into the agent context so it can know which tools are available and for what purpose.   
+With MCP protocol the behavior of LLM agents can be modified by third parties through prompt injection using in the MCP protocol, prompt injections in the MCP tools description and MCP clients (agents) list and use the tools, the list of tools and its description goes into the agent context so it can know which tools are available and for what purpose.   
 As the description of the tool goes to the context of the LLM, this description can be used to modify/poison the behavior of the agent by a third party: exfiltrate sensitive information, write backdoors, bugs, modify call of tools, ...
 
 [More detailed explanation about how to exploit the prompt injection vulnerability in the description of MCP tools could be used to modify agent behavior](https://github.com/alexgarabt/agents-poison)
