@@ -86,7 +86,7 @@ if (!process.env.OPENAI_API_KEY) {
 		}
 
 	} catch (error) {
-		console.error("\nAn error occurred during the Anubis scan:");
+		console.error("\nAn error occurred during the Scanorama scan:");
 		console.error(JSON.stringify(error, null, 2)); // Stringify for better error object logging
 		process.exit(1);
 	}
