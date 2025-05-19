@@ -5,7 +5,6 @@
 	"main": "index.js",
 	"bin": "dist/index.js",
 	"scripts": {
-		"run": "pnpx tsx src/index.ts",
 		"build": "tsc",
 		"start": "node dist/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"

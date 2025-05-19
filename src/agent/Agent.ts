@@ -6,56 +6,60 @@ import {
 	CompiledStateGraph,
 } from '@langchain/langgraph';
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { MCPTool, AnalysisResult } from '../types/State';
-import { listFilesNode } from './ListFilesNode'; // New node
-import { scanFileNode } from './ScanFileNode';   // Rewritten ScanNode
-import { analyzeToolsNode } from './AnalyzeNode'; // Rewritten AnalyzeNode
+import { MCPTool, AnalysisResult } from '../types/State'; // Assuming these are correctly defined
+import { listFilesNode } from './ListFilesNode';
+import { scanFileNode } from './ScanFileNode';
+import { analyzeToolsNode } from './AnalyzeNode';
 import { FileBrowserTool } from '../tools/FileBrowserTool';
 
-// Define the state structure for our graph
-const AnubisGraphState = Annotation.Root({
+// 1. Define the raw schema definition object
+const anubisSchemaDefinition = {
 	repoPath: Annotation<string>({
-		value: (_prev, incoming) => incoming, // Always take the initial seeded value
+		value: (_prev, incoming) => incoming,
 	}),
 	allSourceFiles: Annotation<string[]>({
 		value: (_prev, incoming) => incoming,
 		default: () => [],
 	}),
-	// To keep track of which files to scan next
 	remainingFilesToScan: Annotation<string[]>({
 		value: (prev, incoming) => {
-			if (incoming === null) return []; // Explicitly clear
-			if (prev.length === 0 && incoming.length > 0) return incoming; // Initial population
-			if (incoming.length === 0 && prev.length > 0) return prev.slice(1); // "Pop" first element conceptually
-			return incoming; // Allow direct setting/replacement
+			if (incoming === null) return [];
+			const prevLength = prev?.length ?? 0;
+			if (prevLength === 0 && incoming.length > 0) return incoming;
+			if (incoming.length === 0 && prevLength > 0) return prev!.slice(1); // prev should exist if prevLength > 0
+			return incoming;
 		},
 		default: () => [],
 	}),
 	mcpTools: Annotation<MCPTool[]>({
-		value: (prev, incoming) => [...prev, ...incoming], // Append new tools
+		value: (prev, incoming) => [...(prev ?? []), ...(incoming ?? [])],
 		default: () => [],
 	}),
 	analysisResults: Annotation<AnalysisResult[]>({
-		value: (_prev, incoming) => incoming, // Replace with new results
+		value: (_prev, incoming) => incoming,
 		default: () => [],
 	}),
-	currentFileProcessed: Annotation<string | null>({ // For clarity, which file was just processed
+	currentFileProcessed: Annotation<string | null>({
 		value: (_prev, incoming) => incoming,
 		default: () => null,
 	}),
 	errorMessages: Annotation<string[]>({
-		value: (prev, incoming) => [...prev, ...incoming],
+		value: (prev, incoming) => [...(prev ?? []), ...(incoming ?? [])],
 		default: () => [],
 	}),
-});
+};
 
-// TS type for our graph's state
-export type GraphState = typeof AnubisGraphState.State;
-// TS type for updates to our graph's state
-export type GraphUpdate = typeof AnubisGraphState.Update;
+type AnubisSchemaDefinitionType = typeof anubisSchemaDefinition;
+
+const AnubisGraphAnnotationInstance = Annotation.Root(anubisSchemaDefinition);
+
+export type GraphState = typeof AnubisGraphAnnotationInstance.State;
+export type GraphUpdate = typeof AnubisGraphAnnotationInstance.Update;
+
+type AnubisNodeNames = 'listFiles' | 'scanFile' | 'analyzeTools' | typeof START | typeof END;
 
 export class Agent {
-	private compiledGraph: CompiledStateGraph<GraphState, GraphUpdate, string>;
+	private compiledGraph: CompiledStateGraph<GraphState, GraphUpdate, AnubisNodeNames>;
 	private llm: BaseChatModel;
 	private fileBrowserTool: FileBrowserTool;
 
@@ -63,7 +67,12 @@ export class Agent {
 		this.llm = llm;
 		this.fileBrowserTool = new FileBrowserTool();
 
-		const graphBuilder = new StateGraph(AnubisGraphState);
+		const graphBuilder = new StateGraph<
+			AnubisSchemaDefinitionType,
+			GraphState,
+			GraphUpdate,
+			AnubisNodeNames
+		>(AnubisGraphAnnotationInstance);
 
 		// Define nodes
 		graphBuilder.addNode('listFiles', this.callListFilesNode.bind(this));
@@ -73,25 +82,21 @@ export class Agent {
 		// Define edges
 		graphBuilder.addEdge(START, 'listFiles');
 		graphBuilder.addConditionalEdges('listFiles',
-			(state: GraphState) => state.allSourceFiles.length > 0 ? 'scanFile' : 'analyzeTools' // or END if no files & no tools
+			(state: GraphState) => (state.allSourceFiles && state.allSourceFiles.length > 0 ? 'scanFile' : 'analyzeTools')
 		);
-
 		graphBuilder.addConditionalEdges('scanFile',
-			(state: GraphState) => state.remainingFilesToScan.length > 0 ? 'scanFile' : 'analyzeTools'
+			(state: GraphState) => (state.remainingFilesToScan && state.remainingFilesToScan.length > 0 ? 'scanFile' : 'analyzeTools')
 		);
-
 		graphBuilder.addEdge('analyzeTools', END);
 
 		this.compiledGraph = graphBuilder.compile();
 	}
 
-	// Node execution wrappers to pass LLM and tools
 	private async callListFilesNode(state: GraphState): Promise<GraphUpdate> {
 		return listFilesNode(state, this.fileBrowserTool);
 	}
 
 	private async callScanFileNode(state: GraphState): Promise<GraphUpdate> {
-		// ScanFileNode will now operate on the first file in remainingFilesToScan
 		const currentFileToScan = state.remainingFilesToScan[0];
 		return scanFileNode(state, this.llm, this.fileBrowserTool, currentFileToScan);
 	}
@@ -104,17 +109,13 @@ export class Agent {
 		const initialState: GraphUpdate = {
 			repoPath,
 		};
-
-		// console.log("Initial state for graph:", initialState);
-		const finalState = await this.compiledGraph.invoke(initialState, {
-			recursionLimit: 150, // Adjust as needed, depends on number of files
+		const finalState = await this.compiledGraph.invoke(initialState as Partial<GraphState>, { // Cast might be needed for initial invoke
+			recursionLimit: 150,
 		});
 
 		if (finalState.errorMessages && finalState.errorMessages.length > 0) {
 			console.warn("Errors encountered during agent execution:", finalState.errorMessages);
 		}
-
-		// console.log("Final state from graph:", finalState);
 		return finalState.analysisResults || [];
 	}
 }

@@ -1,6 +1,6 @@
 export interface MCPTool {
 	name: string;
-	description: string;
+	description: string | null;
 	location: string; // file path for context
 }
 

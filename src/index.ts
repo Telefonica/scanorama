@@ -3,10 +3,11 @@ import { Command } from 'commander';
 import * as dotenv from 'dotenv';
 import simpleGit from 'simple-git';
 import { ChatOpenAI } from '@langchain/openai';
-import { Agent } from './agent/Agent'; // Updated path/structure
+import type { BaseChatModel } from '@langchain/core/language_models/chat_models'; // Import BaseChatModel type
+import { Agent } from './agent/Agent';
 import * as fs from 'fs';
 import * as path from 'path';
-import os from 'os'; // For tmpdir
+import os from 'os';
 
 dotenv.config();
 
@@ -26,12 +27,9 @@ if (!process.env.OPENAI_API_KEY) {
 
 (async () => {
 	let repoPath = opts.path;
-	let tempDirToRemove: string | null = null;
-
 	try {
 		if (opts.clone) {
 			const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'anubis-scan-'));
-			tempDirToRemove = tmp;
 			console.log(`\x1b[31mClonning \x1b[0m \x1b[34m${opts.clone} \x1b[0m into \x1b[34m ${tmp}...\x1b[0m`)
 			await simpleGit().clone(opts.clone, tmp);
 			repoPath = tmp;
@@ -40,34 +38,34 @@ if (!process.env.OPENAI_API_KEY) {
 
 		if (!repoPath) {
 			console.error('Error: Please provide a repository to scan using --path <folder> or --clone <repo_url>.');
-			program.help(); // Show help
+			program.help();
 			process.exit(1);
 		}
 
 		console.log(`\n\x1b[31mScanning\x1b[0m repository at: ${repoPath}`);
 
-		const llm = new ChatOpenAI({
+		const openAILlm = new ChatOpenAI({ // This is a specific ChatOpenAI instance
 			apiKey: process.env.OPENAI_API_KEY,
-			model: "gpt-4o", // or your preferred model
-			temperature: 0, // For more deterministic output in JSON mode
-		}).bind({
+			model: "gpt-4o",
+			temperature: 0.7,
+		});
+
+		// Bind OpenAI-specific parameters.
+		// The result of .bind() is a Runnable, which might not be directly assignable to BaseChatModel.
+		const boundLlm = openAILlm.bind({
 			response_format: { type: "json_object" },
 		});
 
-		const agent = new Agent(llm); // Pass LLM to constructor
-		const results = await agent.run(repoPath); // Pass repoPath to run method
+		// Pass the (bound) LLM to the Agent.
+		// despite its generic Runnable type, is compatible with BaseChatModel
+		const agent = new Agent(boundLlm as BaseChatModel);
+
+		const results = await agent.run(repoPath);
 
 		console.log('\n\x1b[42m--- REPORT ---\x1b[0m');
 		if (results.length === 0) {
 			console.log("No MCP tools found or no risks identified in analyzed tools.");
 		} else {
-			//for (const r of results) {
-			//	console.log(`\nTool: ${r.name}`);
-			//	console.log(`  Location: ${r.location}`);
-			//	console.log(`  Description: ${r.description.substring(0, 100)}${r.description.length > 100 ? '...' : ''}`);
-			//	console.log(`  Risky: ${r.risky ? 'Yes' : 'No'}`);
-			//	console.log(`  Explanation: ${r.explanation}`);
-			//}
 			console.dir(results)
 		}
 
@@ -77,22 +75,9 @@ if (!process.env.OPENAI_API_KEY) {
 			console.log(`\nReport written to ${reportFilePath}`);
 		}
 
-	} catch (error: any) {
+	} catch (error) {
 		console.error("\nAn error occurred during the Anubis scan:");
-		console.error(error.message);
-		if (error.stack) {
-			console.error(error.stack);
-		}
+		console.error(JSON.stringify(error, null, 2)); // Stringify for better error object logging
 		process.exit(1);
-	} finally {
-		if (tempDirToRemove) {
-			try {
-				// console.log(`Cleaning up temporary directory: ${tempDirToRemove}`);
-				// fs.rmSync(tempDirToRemove, { recursive: true, force: true }); // Node 14.14+
-				// For wider compatibility, use older fs.rmdir or a library if needed for robustness
-			} catch (cleanupError: any) {
-				// console.warn(`Warning: Could not remove temporary directory ${tempDirToRemove}: ${cleanupError.message}`);
-			}
-		}
 	}
 })();

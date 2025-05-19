@@ -27,7 +27,7 @@ export const listFilesNode = async (
 	} catch (error) {
 		console.error("Error in listFilesNode:", error);
 		return {
-			errorMessages: [`Failed to list files: ${error?.message}`],
+			errorMessages: [`Failed to list files: ${JSON.stringify(error, null, 2)}`],
 			allSourceFiles: [], // Ensure it's empty on error
 			remainingFilesToScan: []
 		};

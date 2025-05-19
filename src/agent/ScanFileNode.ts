@@ -22,6 +22,13 @@ export const scanFileNode = async (
 		const fileExtension = filePathToScan.split('.').pop()?.toLowerCase() || 'unknown';
 
 		const extractionPrompt = `
+
+--- CONTEXT ---
+The Model Context Protocol (MCP) is an open standard developed by Anthropic that enables AI applications to connect with external tools and data sources in a standardized way. An MCP server exposes capabilities, known as tools, each accompanied by a natural language description. These descriptions are injected into the context of large language models (LLMs), guiding their behavior.
+
+To facilitate the development of MCP-compatible applications, official SDKs are available in multiple programming languages, including Python, TypeScript, Java, Kotlin, C#, and Swift . These SDKs allow developers to implement MCP servers and clients across various platforms, ensuring broad compatibility and ease of integration.
+--- END ---
+
 You are an AI assistant specialized in identifying Model Context Protocol (MCP) tool definitions within source code.
 Analyze the following ${fileExtension} file content and extract all MCP tool definitions.
 An MCP tool definition typically includes a tool name and a user-facing description.
@@ -42,44 +49,45 @@ Each object in the "tools" array should have the following structure:
   "description": "tool_description_here"
 }
 
-If no MCP tools are found in this file, the "tools" key should contain an empty JSON array [].
+IF NO MCP TOOLS ARE FOUND IN THIS FILE, THE "TOOLS" KEY SHOULD CONTAIN AN EMPTY JSON ARRAY [].
 
-File Path: ${filePathToScan}
-File Content:
+This is the file path of the file you are scanning, FILE PATH: ${filePathToScan}
+FILE CONTENT:
 \`\`\`${fileExtension}
 ${fileContent}
 \`\`\`
 
-JSON Output (a single JSON object with a "tools" key):
+JSON OUTPUT (A SINGLE JSON OBJECT WITH A "TOOLS" KEY):
 `;
 
 		const response = await llm.invoke([new HumanMessage(extractionPrompt)]);
 		// console.log(`LLM raw response for ${filePathToScan}:`, response.content); // Optional: for debugging
 
-		let parsedResponse: any;
+		let parsedResponse: unknown;
 		let extractedRaw: { name: string; description: string }[] = [];
 
+		// Parse the response of the LLM if its in plain text
 		if (typeof response.content === 'string') {
 			try {
 				parsedResponse = JSON.parse(response.content);
-			} catch (e: any) {
+			} catch (e) {
 				const jsonMatch = response.content.match(/```json\n([\s\S]*?)\n```/);
 				if (jsonMatch && jsonMatch[1]) {
 					try {
 						parsedResponse = JSON.parse(jsonMatch[1]);
-					} catch (e2: any) {
-						console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan} after markdown extraction: ${e2.message}. Raw content: ${response.content}`);
+					} catch (e2) {
+						console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan} after markdown extraction: ${JSON.stringify(e2, null, 2)}. Raw content: ${response.content}`);
 						return {
-							errorMessages: [`LLM response parsing error (markdown) for ${filePathToScan}: ${e2.message}`],
+							errorMessages: [`LLM response parsing error (markdown) for ${filePathToScan}: ${JSON.stringify(e2, null, 2)}`],
 							currentFileProcessed: filePathToScan,
 							remainingFilesToScan: state.remainingFilesToScan.slice(1),
 							mcpTools: [], // Ensure we return empty tools on error
 						};
 					}
 				} else {
-					console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan}: ${e.message}. Raw content: ${response.content}`);
+					console.error(`ScanFileNode: Failed to parse JSON from LLM response for ${filePathToScan}: ${JSON.stringify(e, null, 2)}. Raw content: ${response.content}`);
 					return {
-						errorMessages: [`LLM response parsing error for ${filePathToScan}: ${e.message}`],
+						errorMessages: [`LLM response parsing error for ${filePathToScan}: ${JSON.stringify(e, null, 2)}`],
 						currentFileProcessed: filePathToScan,
 						remainingFilesToScan: state.remainingFilesToScan.slice(1),
 						mcpTools: [], // Ensure we return empty tools on error
@@ -87,21 +95,20 @@ JSON Output (a single JSON object with a "tools" key):
 				}
 			}
 		} else {
-			// If response.content is already an object (less common with ChatOpenAI default string output but good to handle)
+			// Already object parsed
 			parsedResponse = response.content;
 		}
 
 		// Ensure parsedResponse is an object and has the 'tools' key which is an array
-		if (parsedResponse && typeof parsedResponse === 'object' && Array.isArray(parsedResponse.tools)) {
+		if (parsedResponse && typeof parsedResponse === 'object' && "tools" in parsedResponse && Array.isArray(parsedResponse.tools)) {
 			extractedRaw = parsedResponse.tools;
 		} else {
 			console.warn(`ScanFileNode: LLM response for ${filePathToScan} was not in the expected format (object with a 'tools' array). Response:`, JSON.stringify(parsedResponse, null, 2));
-			// extractedRaw remains [], which is the correct default.
 		}
 
 		const newTools: MCPTool[] = extractedRaw.map(tool => ({
-			name: String(tool.name || "Unknown Tool"), // Ensure name is a string
-			description: String(tool.description || ""), // Ensure description is a string
+			name: String(tool.name || "Unknown Tool"),
+			description: String(tool.description || ""),
 			location: filePathToScan,
 		}));
 
@@ -114,10 +121,10 @@ JSON Output (a single JSON object with a "tools" key):
 			remainingFilesToScan: state.remainingFilesToScan.slice(1)
 		};
 
-	} catch (error: any) {
+	} catch (error) {
 		console.error(`Error in scanFileNode for ${filePathToScan}:`, error);
 		return {
-			errorMessages: [`Failed to scan file ${filePathToScan}: ${error.message}`],
+			errorMessages: [`Failed to scan file ${filePathToScan}: ${JSON.stringify(error, null, 2)}`],
 			currentFileProcessed: filePathToScan,
 			remainingFilesToScan: state.remainingFilesToScan.slice(1),
 			mcpTools: [], // Ensure we return empty tools on error
