@@ -33,6 +33,12 @@ export class FileBrowserTool {
 	}
 
 	async readFile(filePath: string): Promise<string> {
-		return fs.readFileSync(filePath, 'utf-8');
+		try {
+			return fs.readFileSync(filePath, 'utf-8');
+		}
+		catch (error: unknown) {
+			console.error(`Error cant read the file ${filePath} \nerror=${JSON.stringify(error, null, 2)}`)
+			return "";
+		}
 	}
 }

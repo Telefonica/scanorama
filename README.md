@@ -25,7 +25,7 @@ As the description of the tool goes to the context of the LLM, this description 
 
 ## What is Scanorama?
 
-**Scanorama** is a command-line tool to perform static analysis of any MCP-based tool (built with official MCP SDKs) and detect potential security issues. It generates a human-readable report that flags:
+**Scanorama** is a command-line tool to perform static analysis of any MCP-based server (built with official MCP SDKs) and detect potential security issues. It generates a human-readable report that flags:
 
 - **Prompt injection**: Attempts to manipulate or exfiltrate data via crafted prompts.
 - **[IN PROGRESS] Malicious code**: Suspicious code patterns that may compromise the host.
