@@ -11,17 +11,11 @@
 
 - [What is Scanorama?](#what-is-scanorama)
 - [What is the Model Context Protocol (MCP)?](#what-is-the-model-context-protocol-mcp)
+- [Why scan MCP servers ?](#why-scan-mcp-servers-)
 - [💻 Installation](#-installation)
 - [⚙️ Usage](#usage)
 - [⭐ Supported providers](#-supported-providers)
 - [❗ Disclaimer & Contact](#-disclaimer--contact)
-
-## Why scan MCP servers ?
-
-With MCP protocol the behavior of LLM agents can be modified by third parties through prompt injection using in the MCP protocol, prompt injections in the MCP tools description and MCP clients (agents) list and use the tools, the list of tools and its description goes into the agent context so it can know which tools are available and for what purpose.   
-As the description of the tool goes to the context of the LLM, this description can be used to modify/poison the behavior of the agent by a third party: exfiltrate sensitive information, write backdoors, bugs, modify call of tools, ...
-
-[More detailed explanation about how to exploit the prompt injection vulnerability in the description of MCP tools could be used to modify agent behavior](https://github.com/alexgarabt/agents-poison)
 
 ## What is Scanorama?
 
@@ -55,14 +49,16 @@ At the heart of _Scanorama_ is a **specialized agent** designed for **code secur
 Scanorama uses a multi-step process, like an automated assembly line, to find and analyze your MCP tools:
 
 1.  **Step 1: Find the Code Files (`listFilesNode`)**
-    *   First, Scanorama looks through your project to find all the important source code files (like Python, TypeScript, Java files, etc.).
+
+    - First, Scanorama looks through your project to find all the important source code files (like Python, TypeScript, Java files, etc.).
 
 2.  **Step 2: Extract Tool Details - One File at a Time (`scanFileNode`)**
-    * Decide what file should scan of the project and if find `MCP tools` it saves its description and name and continue searching through files until it decides to finish.
+
+    - Decide what file should scan of the project and if find `MCP tools` it saves its description and name and continue searching through files until it decides to finish.
 
 3.  **Step 3: Analyze Tool Descriptions for Risks (`analyzeToolsNode`)**
-    *   Once Scanorama has checked all the files and gathered all the tool names and descriptions, it moves to the final step.
-    *   It takes all the tool descriptions it found and search thorughth the tools to find prompt injections to that could modify the default behavior of an agent using the mcp.
+    - Once Scanorama has checked all the files and gathered all the tool names and descriptions, it moves to the final step.
+    - It takes all the tool descriptions it found and search thorughth the tools to find prompt injections to that could modify the default behavior of an agent using the mcp.
 
 ## What is the Model Context Protocol (MCP)?
 
@@ -76,6 +72,13 @@ The **Model Context Protocol (MCP)** is an open standard that defines a universa
    Developers build once against MCP and seamlessly plug into any compliant LLM or data provider, reducing integration overhead.
 
 Together, these capabilities break down silos between AI models and enterprise systems, paving the way for more powerful, secure, and maintainable AI-driven workflows.
+
+## Why scan MCP servers ?
+
+With MCP protocol the behavior of LLM agents can be modified by third parties through prompt injection using in the MCP protocol, prompt injections in the MCP tools description and MCP clients (agents) list and use the tools, the list of tools and its description goes into the agent context so it can know which tools are available and for what purpose.  
+As the description of the tool goes to the context of the LLM, this description can be used to modify/poison the behavior of the agent by a third party: exfiltrate sensitive information, write backdoors, bugs, modify call of tools, ...
+
+[More detailed explanation about how to exploit the prompt injection vulnerability in the description of MCP tools could be used to modify agent behavior](https://github.com/alexgarabt/agents-poison)
 
 ## 💻 Installation
 
@@ -136,6 +139,7 @@ scanorama --path <LOCAL_DIRECTORY>
 ```
 
 ### Save report
+
 Supports saving into a json format the generated report
 
 ```bash
