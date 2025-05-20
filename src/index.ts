@@ -23,9 +23,9 @@ dotenv.config();
 
 const program = new Command();
 program
-	.option('-p', '--path   <folder>', 'Local folder to scan')
-	.option('-c', '--clone  <repo>', 'GitHub repo URL to clone and scan')
-	.option('-o', '--output <file>', 'Write JSON report to file');
+	.option('-p, --path <folder>', 'Local folder to scan')
+	.option('-c, --clone <repo>', 'GitHub repo URL to clone and scan')
+	.option('-o, --output <file>', 'Write JSON report to file');
 
 program.description(`Scanorama is a command-line tool to perform static analysis of any MCP-based server\n(built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n\nBe CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under `);
 
