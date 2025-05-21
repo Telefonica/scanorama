@@ -2,10 +2,14 @@ import type { BaseChatModel } from "@langchain/core/language_models/chat_models"
 
 export type ProviderSlug = "openai" | "anthropic" | "google" | "ollama" | "azure";
 
+
 export interface ModelInfo {
 	id: string; // LangChain model ID, or deployment name for Azure, or user-defined for Ollama
-	name: string;
-	description?: string;
+	name: string; // User-friendly display name
+	description?: string; // Optional brief description
+	supportsTemperature?: boolean; // New: Flag to indicate temperature support
+	// supportsJsonMode?: boolean; (though this is often handled by the client binding)
+	// defaultTemperature?: number; (if a model has a preferred default different from provider's)
 }
 
 export interface ClientConfig {
