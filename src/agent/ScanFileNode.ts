@@ -49,7 +49,7 @@ Look for patterns such as:
 - C#: Attributes like [McpServerTool(Name="...", Description="...")] or [Tool(Name="...", Description="...")].
 
 For each tool found, provide its name and its exact description.
-The description is critical as it's the part that might be used for prompt injection.
+The description is critical as it's the part that might be used for prompt injection SO YOU SHOULD RESPOND WITH THE COMPLETE DESCRIPTION OF THE TOOL.
 
 Respond with a single JSON object. This object should have a key named "tools" which contains an array of objects.
 Each object in the "tools" array should have the following structure:

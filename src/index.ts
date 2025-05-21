@@ -63,7 +63,7 @@ if (!process.env.OPENAI_API_KEY) {
 
 		const openAILlm = new ChatOpenAI({ // This is a specific ChatOpenAI instance
 			apiKey: process.env.OPENAI_API_KEY,
-			model: "gpt-4o",
+			model: "gpt-4-turbo",
 			temperature: 0.7,
 		});
 
