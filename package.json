@@ -12,8 +12,11 @@
 	},
 	"packageManager": "pnpm@10.6.5",
 	"dependencies": {
+		"@langchain/anthropic": "^0.3.20",
 		"@langchain/core": "^0.3.55",
+		"@langchain/google-genai": "^0.2.9",
 		"@langchain/langgraph": "^0.2.71",
+		"@langchain/ollama": "^0.2.0",
 		"@langchain/openai": "^0.5.10",
 		"commander": "^13.1.0",
 		"dotenv": "^16.5.0",
