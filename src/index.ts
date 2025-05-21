@@ -8,7 +8,7 @@ import { Agent } from './agent/Agent';
 import * as fs from 'fs';
 import * as path from 'path';
 import os from 'os';
-import { modelManager, ProviderSlug, ClientConfig } from './models'; // Use the new modelManager
+import { modelManager, ProviderSlug, ClientConfig } from './models';
 
 dotenv.config();
 
@@ -21,16 +21,16 @@ program
 	.option('-c, --clone <repo>', 'GitHub repo URL to clone and scan')
 	.option('-o, --output <file>', 'Write JSON report to file')
 	.addOption(
-		new Option('-pv, --provider <name>', 'LLM provider to use')
+		new Option('--provider <name>', 'LLM provider to use')
 			.choices(providerChoices)
 			.default('openai', 'OpenAI (default)')
 	)
 	.option('-m, --model <id>', 'Specific model ID to use (e.g., gpt-4o, claude-3-opus-20240229, or your Azure deployment/Ollama model name)')
 	.option('--list-models', 'List available conceptual models and providers, then exit')
 	.option('--temperature <temp>', 'Set LLM temperature (e.g., 0.1 for more deterministic, 0.7 for more creative)', parseFloat)
-	.description(`Scanorama is a command-line tool to perform static analysis...`) // Keep description
+	.description(`Scanorama is a command-line tool to perform static analysis of any MCP-based server\n(built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n\nBe CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under `)
 	.usage("--clone https://github.com/user/repo.git --provider openai --model gpt-4o --output report.json")
-	.version("1.1.0"); // Increment version
+	.version("1.1.0");
 
 program.parse(process.argv);
 const opts = program.opts<{
