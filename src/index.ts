@@ -61,7 +61,7 @@ if (opts.listModels) {
 		provider.getModels().forEach(m => {
 			let modelDesc = `    - ${m.name} (id: --model ${m.id})`;
 			if (m.id === provider.getDefaultModelId() && provider.slug !== 'azure' && provider.slug !== 'ollama') {
-				modelDesc += " (default)";
+				modelDesc += " [DEFAULT]";
 			}
 			console.log(modelDesc);
 		});
@@ -87,7 +87,7 @@ if (opts.listModels) {
 			console.log(`\x1b[36mCloning \x1b[0m \x1b[34m${opts.clone}\x1b[0m into \x1b[34m${tmp}...\x1b[0m`);
 			await simpleGit().clone(opts.clone, tmp);
 			repoPath = tmp;
-			console.log('\x1b[42mCloning completed!\x1b[0m');
+			console.log('\x1b[36mCloning completed!\x1b[0m');
 		}
 
 		if (!repoPath) {
@@ -116,17 +116,17 @@ if (opts.listModels) {
 		const agent = new Agent(llm); // Agent expects BaseChatModel
 		const results = await agent.run(repoPath);
 
-		console.log('\n\x1b[42m--- REPORT ---');
+		console.log('\n\x1b[36m--- REPORT ---\x1b[0m');
 		if (results.length === 0) {
 			console.log("No MCP tools found or no risks identified in analyzed tools.");
 		} else {
-			console.dir(results, { depth: null });
+			console.dir(results);
 		}
 
 		if (opts.output) {
 			const reportFilePath = path.resolve(opts.output);
 			fs.writeFileSync(reportFilePath, JSON.stringify(results, null, 2));
-			console.log(`\n\x1b[42mReport written to ${reportFilePath}\x1b[0m`);
+			console.log(`\n\x1b[36mReport written to ${reportFilePath}\x1b[0m`);
 		}
 
 	} catch (error: any) {
