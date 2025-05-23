@@ -1,22 +1,21 @@
 import { AzureChatOpenAI } from "@langchain/openai";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { ILlmProvider, ModelInfo, ClientConfig, ProviderSlug } from "../types";
+import { DefaultModelIdError } from "../types";
 
 export class AzureProvider implements ILlmProvider {
 	readonly slug: ProviderSlug = "azure";
 	readonly friendlyName: string = "Azure OpenAI";
 	readonly docsUrl: string = "https://learn.microsoft.com/en-us/azure/ai-services/openai/reference";
 
-	// These are conceptual models. User MUST provide their deployment ID via --model.
 	private readonly models: ModelInfo[] = [
-		{ id: "azure-gpt-4o", name: "GPT-4o (Azure - specify your deployment ID with --model)" },
-		{ id: "azure-gpt-35-turbo", name: "GPT-3.5 Turbo (Azure - specify your deployment ID with --model)" },
+		// Conceptual list: User provides their actual deployment ID via --model
+		// The 'supportsTemperature' flag is less relevant now for Azure if we never send it.
+		{ id: "o3-mini", name: "o3-mini (via Azure Deployment)" },
 	];
 
 	getDefaultModelId(): string {
-		// User MUST specify their deployment ID with --model for Azure.
-		// This default is a placeholder and will likely cause an error if not overridden.
-		return "your-default-azure-deployment-id";
+		throw new DefaultModelIdError("Azure OpenAI provider requires you to specify your deployment ID using the --model option. There is no general default.");
 	}
 
 	getModels(): ModelInfo[] {
@@ -26,38 +25,45 @@ export class AzureProvider implements ILlmProvider {
 	getRequiredEnvVars(): string[] {
 		return [
 			"AZURE_OPENAI_API_KEY",
-			"AZURE_OPENAI_ENDPOINT", // or AZURE_OPENAI_API_INSTANCE_NAME
+			"AZURE_OPENAI_ENDPOINT",
 			"AZURE_OPENAI_API_VERSION",
-			// AZURE_OPENAI_API_DEPLOYMENT_NAME is handled by the modelId parameter
 		];
 	}
 
 	getClient(deploymentId: string, config: ClientConfig): BaseChatModel {
-		// For Azure, 'modelId' from CLI IS the deploymentId.
-		const endpoint = process.env.AZURE_OPENAI_ENDPOINT || process.env.AZURE_OPENAI_API_INSTANCE_NAME;
+		const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
 
 		if (!deploymentId) {
 			throw new Error("Azure OpenAI deployment ID is required. Please provide it using the --model option.");
 		}
-		if (!endpoint) {
-			throw new Error("Azure OpenAI endpoint is required. Set AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_INSTANCE_NAME.");
-		}
-		if (!process.env.AZURE_OPENAI_API_VERSION) {
-			throw new Error("Azure OpenAI API version is required. Set AZURE_OPENAI_API_VERSION.");
-		}
-		if (!process.env.AZURE_OPENAI_API_KEY) {
-			throw new Error("Azure OpenAI API key is required. Set AZURE_OPENAI_API_KEY.");
-		}
+		if (!process.env.AZURE_OPENAI_API_KEY) throw new Error("Missing AZURE_OPENAI_API_KEY. See docs: " + this.docsUrl);
+		if (!endpoint) throw new Error("Missing AZURE_OPENAI_ENDPOINT. See docs: " + this.docsUrl);
+		if (!process.env.AZURE_OPENAI_API_VERSION) throw new Error("Missing AZURE_OPENAI_API_VERSION. See docs: " + this.docsUrl);
 
+		// Temperature is NOT sent for Azure. The deployment's default will be used.
+		if (config.temperature !== undefined) {
+			console.warn(
+				`\x1b[33mWarning:\x1b[0m The --temperature option is ignored for Azure OpenAI deployments. ` +
+				`The temperature configured for the deployment '\x1b[1m${deploymentId}\x1b[0m' in Azure will be used.`
+			);
+		}
+		console.log(
+			`\x1b[36mInfo:\x1b[0m For Azure deployment '\x1b[1m${deploymentId}\x1b[0m', the temperature setting from Scanorama is ignored. ` +
+			`The deployment's own default temperature will be used.`
+		);
 
-		const client = new AzureChatOpenAI({
+		// Correct type for AzureChatOpenAI constructor options
+		const clientParams: ConstructorParameters<typeof AzureChatOpenAI>[0] = {
 			apiKey: process.env.AZURE_OPENAI_API_KEY,
+			azureADTokenProvider: undefined,
 			azureOpenAIApiDeploymentName: deploymentId,
-			azureOpenAIBasePath: endpoint.endsWith('/') ? `${endpoint}openai/deployments` : `${endpoint}/openai/deployments`,
+			azureOpenAIEndpoint: endpoint,
 			azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
-			temperature: config.temperature ?? 0.7,
+			// IMPORTANT: `temperature` property is omitted here.
 			...(config.providerClientOptions || {}),
-		});
+		};
+
+		const client = new AzureChatOpenAI(clientParams);
 
 		// Bind for JSON mode
 		return client.bind({

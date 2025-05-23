@@ -47,3 +47,12 @@ export interface ILlmProvider {
 	 */
 	getClient(modelId: string, config: ClientConfig): BaseChatModel;
 }
+
+export class DefaultModelIdError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.message = message;
+		this.name = "DefaultModelIdError";
+		Object.setPrototypeOf(this, DefaultModelIdError.prototype);
+	}
+}

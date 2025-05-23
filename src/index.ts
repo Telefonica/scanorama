@@ -8,7 +8,7 @@ import { Agent } from './agent/Agent';
 import * as fs from 'fs';
 import * as path from 'path';
 import os from 'os';
-import readline from 'readline'; // Import readline for user input
+import readline from 'readline';
 import { modelManager, ProviderSlug, ClientConfig } from './models';
 
 dotenv.config();
@@ -43,11 +43,17 @@ program
 	)
 	.option('-m, --model <id>', 'Specific model ID to use (e.g., gpt-4o, claude-3-opus-20240229, or your Azure deployment/Ollama model name)')
 	.option('--list-models', 'List available conceptual models and providers, then exit')
-	.option('--temperature <temp>', 'Set LLM temperature (e.g., 0.1 for more deterministic, 0.7 for more creative)', parseFloat)
+	.option(
+		'--temperature <temp>',
+		'Set LLM temperature (e.g., 0.1 for deterministic, 0.7 for creative). ' +
+		'Note: This option is IGNORED for the Azure OpenAI provider; the Azure deployment\'s default temperature is always used. ' +
+		'Some other models/providers might also not support or might ignore this.',
+		parseFloat
+	)
 	.option('-y, --yes', 'Automatically answer yes to all confirmation prompts (e.g., for unlisted models)') // New option
-	.description(`Scanorama is a command-line tool to perform static analysis...`)
+	.description(`Scanorama is a command-line tool to perform static analysis of any MCP-based server\n(built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n\nBe CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under `)
 	.usage("--clone https://github.com/user/repo.git --provider openai --model gpt-4o --output report.json")
-	.version("1.1.1"); // Increment version
+	.version("1.1.0");
 
 program.parse(process.argv);
 const opts = program.opts<{
@@ -58,16 +64,20 @@ const opts = program.opts<{
 	model?: string;
 	listModels?: boolean;
 	temperature?: number;
-	yes?: boolean; // For the new option
+	yes?: boolean;
 }>();
 
 if (opts.listModels) {
-	// ... (your existing colored listModels logic) ...
 	console.log("\x1b[1m\x1b[36mAvailable LLM Providers and Conceptual Models for Scanorama:\x1b[0m");
 	modelManager.getAllProviders().forEach(provider => {
 		console.log(`\nProvider: \x1b[32m${provider.friendlyName}\x1b[0m (slug: --provider ${provider.slug})`);
 		console.log(`  Docs: ${provider.docsUrl}`);
-		const reqEnvs = provider.getRequiredEnvVars(provider.getDefaultModelId());
+		let defaultModelIdForEnvCheck: string | undefined;
+		try {
+			defaultModelIdForEnvCheck = provider.getDefaultModelId();
+		} catch (e) { /* ignore */ }
+
+		const reqEnvs = provider.getRequiredEnvVars(defaultModelIdForEnvCheck);
 		if (reqEnvs.length > 0) {
 			const coloredEnvs = reqEnvs.map(env => `\x1b[31m${env}\x1b[0m`).join(", ");
 			console.log(`  Required Environment Variables: ${coloredEnvs}`);
@@ -75,27 +85,35 @@ if (opts.listModels) {
 			console.log(`  No specific API key environment variables required (e.g., Ollama).`);
 		}
 
+		console.log(`  \x1b[36mModels:\x1b[0m`);
 		if (provider.slug === 'ollama') {
-			console.log(`  Models: For \x1b[32m${provider.friendlyName}\x1b[0m, you specify your locally pulled model name using the --model option.`);
-			console.log(`          Example: --model llama3`);
+			console.log(`    For \x1b[32m${provider.friendlyName}\x1b[0m, specify your locally pulled model name using the \x1b[4m--model <your-ollama-model>\x1b[0m option.`);
 		} else if (provider.slug === 'azure') {
-			console.log(`  Models: For \x1b[32m${provider.friendlyName}\x1b[0m, you must specify your Azure Deployment ID using the --model option.`);
-			console.log(`          Example: --model your_deployment_id`);
+			console.log(`    For \x1b[32m${provider.friendlyName}\x1b[0m, you \x1b[1mMUST\x1b[0m specify your \x1b[4mAzure Deployment ID\x1b[0m using the \x1b[4m--model <your-deployment-id>\x1b[0m option.`);
+			console.log(`    \x1b[33mNote:\x1b[0m Scanorama does not send a temperature setting to Azure; your deployment's default temperature will be used.`);
 		}
 
 		provider.getModels().forEach(m => {
 			let modelIdDisplay = m.id;
+			let defaultMarker = "";
 			if (provider.slug === 'ollama' && m.id === 'custom') {
-				modelIdDisplay = "your_local_model_name";
-			} else if (provider.slug === 'azure' && m.id.includes("-azure-deployment")) { // A bit heuristic
-				modelIdDisplay = "your_deployment_id";
+				modelIdDisplay = "<your-ollama-model>";
+			} else if (provider.slug === 'azure' && m.id.startsWith("example-")) {
+				modelIdDisplay = "<your-deployment-id>";
 			}
 
-			let modelDesc = `    - \x1b[1m\x1b[37m${m.name}\x1b[0m (id: --model ${modelIdDisplay})`;
-			if (m.id === provider.getDefaultModelId() && provider.slug !== 'azure' && provider.slug !== 'ollama') {
-				modelDesc = `    - \x1b[1m\x1b[32m${m.name}\x1b[0m (id: --model ${modelIdDisplay}) [DEFAULT]`;
-			}
-			console.log(modelDesc);
+			try {
+				if (m.id === provider.getDefaultModelId() && provider.slug !== 'azure' && provider.slug !== 'ollama') {
+					defaultMarker = " \x1b[1m\x1b[32m[DEFAULT]\x1b[0m";
+				}
+			} catch (e) { /* ignore */ }
+
+			// The supportsTemperature flag on conceptual Azure models is less critical now, but can be kept for general info
+			const tempSupportInfo = (provider.slug === 'azure')
+				? " \x1b[33m(uses deployment's default temp)\x1b[0m"
+				: (m.supportsTemperature === false ? " \x1b[33m(may not support/use temperature)\x1b[0m" : "");
+
+			console.log(`    - \x1b[1m\x1b[37m${m.name}\x1b[0m (conceptual id for --model: ${modelIdDisplay})${defaultMarker}${tempSupportInfo}`);
 		});
 	});
 	process.exit(0);

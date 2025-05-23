@@ -1,4 +1,5 @@
 import type { ILlmProvider, ProviderSlug, ModelInfo, ClientConfig } from "./types";
+import { DefaultModelIdError } from "./types";
 import { OpenAIProvider } from "./providers/openai";
 import { AnthropicProvider } from "./providers/anthropic";
 import { AzureProvider } from "./providers/azure";
@@ -43,7 +44,16 @@ export class ModelManager {
 			);
 		}
 
-		let effectiveModelId = modelIdFromCli || provider.getDefaultModelId();
+		let effectiveModelId = modelIdFromCli;
+		try {
+			effectiveModelId = effectiveModelId || provider.getDefaultModelId();
+		} catch (error: unknown) {
+			if (error instanceof DefaultModelIdError) {
+				console.error(`\n\x1b[31m${error.message}\x1b[0m\n\n`);
+				process.exit(1);
+			}
+			else throw error;
+		}
 		let modelInfo = provider.getModels().find(m => m.id === effectiveModelId);
 		let isExplicitlyListed = !!modelInfo;
 
