@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+/**
+ * SPDX-FileCopyrightText: © 2025 Telefónica Innovación Digital S.L.
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
+
 import { Command, Option } from 'commander';
 import * as dotenv from 'dotenv';
 import simpleGit from 'simple-git';
@@ -187,13 +192,43 @@ if (opts.listModels) {
 		const agent = new Agent(llm);
 		const results = await agent.run(repoPath);
 
-		console.log('\n\x1b[36m--- REPORT ---');
-		if (results.length === 0) {
-			console.log("No MCP tools found or no risks identified in analyzed tools.");
-		} else {
-			console.dir(results);
-		}
 
+		if (results.length === 0) {
+			console.log("\x1b[32m✅ No MCP tools found or no risks identified in analyzed tools.\x1b[0m");
+		} else {
+			let injectionCount = 0;
+			results.forEach(result => {
+				if (result.injectionType === "Injection") {
+					injectionCount++;
+					// Red cross emoji, then "Potential Injection in Tool:", then Bold Red tool name
+					console.log(`\n\x1b[31m\n❌ Potential Injection in Tool: \x1b[1m${result.name}\x1b[0m`);
+					// Location in Red
+					console.log(`\x1b[31mLocation:\x1b[0m ${result.location}`);
+					// Full Description in Red
+					console.log(`\x1b[31mDescription: "${result.description || 'N/A'}" \x1b[0m`);
+					// Explanation in Yellow (to distinguish it slightly, but still indicate warning)
+					console.log(`\x1b[33mExplanation:\x1b[0m ${result.explanation}\n\n`);
+				} else if (result.injectionType === "No-Injection") {
+					// This part remains the same as your previous request for "No-Injection"
+					console.log(`\x1b[32m\n✅ \x1b[1m${result.name}\x1b[0m - No injection risks found. (\x1b[90m${result.location}\x1b[0m)`);
+				} else { // Unknown
+					// This part remains the same for "Unknown"
+					console.log(`\x1b[33m\n⚠️ \x1b[1m${result.name}\x1b[0m - Analysis result unknown. (\x1b[90m${result.location}\x1b[0m)`);
+					console.log(`  \x1b[90mDescription:\x1b[0m "${result.description ? result.description.substring(0, 100) + (result.description.length > 100 ? '...' : '') : 'N/A'}"`);
+					console.log(`  \x1b[33mExplanation:\x1b[0m ${result.explanation}`);
+				}
+			});
+
+			console.log("\n\x1b[1m--- Summary ---");
+			if (injectionCount > 0) {
+				console.log(`\x1b[31mFound ${injectionCount} tool(s) with potential injection risks.\x1b[0m`);
+			} else {
+				console.log("\x1b[32mAll analyzed tools appear to be safe from prompt injection.\x1b[0m");
+			}
+			console.log(`Total tools analyzed: ${results.length}`);
+		}
+		console.log("\x1b[0m"); // Reset color at the very end of report section
+		// --- End Updated Report Printing ---
 		if (opts.output) {
 			const reportFilePath = path.resolve(opts.output);
 			fs.writeFileSync(reportFilePath, JSON.stringify(results, null, 2));
@@ -202,7 +237,8 @@ if (opts.listModels) {
 
 
 	} catch (error: unknown) {
-		console.error(`\n\x1b[41mAn error occurred during the Scanorama scan: ${JSON.stringify(error, null, 2)}\x1b[0m`);
+		console.error(`\n\x1b[41mAn error occurred during the Scanorama scan:\x1b[0m`);
+		console.dir(error);
 		process.exit(1);
 	}
 })();
