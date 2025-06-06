@@ -121,7 +121,7 @@ JSON OUTPUT (A SINGLE JSON OBJECT WITH A "TOOLS" KEY):
 			location: filePathToScan,
 		}));
 
-		if (newTools.length > 0) console.log(`\x1b[42mFound ${newTools.length} tools in ${filePathToScan}.  \x1b[0m`);
+		if (newTools.length > 0) console.log(`\x1b[36mFound ${newTools.length} tools in ${filePathToScan}.  \x1b[0m`);
 		else console.warn("\x1b[43mDidnt find tools to analyze\x1b[0m");
 
 		return {

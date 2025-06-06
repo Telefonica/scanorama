@@ -17,3 +17,4 @@ export interface AnalysisResult extends MCPTool {
 	injectionType: "Injection" | "No-Injection" | "Unknown";
 	explanation: string;
 }
+
