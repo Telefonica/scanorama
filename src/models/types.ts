@@ -1,3 +1,7 @@
+/**
+ * SPDX-FileCopyrightText: © 2025 Telefónica Innovación Digital S.L.
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 
 export type ProviderSlug = "openai" | "anthropic" | "google" | "ollama" | "azure";

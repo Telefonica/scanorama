@@ -1,7 +1,10 @@
+/**
+ * SPDX-FileCopyrightText: © 2025 Telefónica Innovación Digital S.L.
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
 import type { ILlmProvider, ProviderSlug, ModelInfo, ClientConfig } from "./types";
 import { DefaultModelIdError } from "./types";
 import { OpenAIProvider } from "./providers/openai";
-import { AnthropicProvider } from "./providers/anthropic";
 import { AzureProvider } from "./providers/azure";
 import { OllamaProvider } from "./providers/ollama";
 import { GoogleProvider } from "./providers/google";
@@ -13,7 +16,6 @@ export class ModelManager {
 	constructor() {
 		this.providers = new Map();
 		this.registerProvider(new OpenAIProvider());
-		this.registerProvider(new AnthropicProvider());
 		this.registerProvider(new AzureProvider());
 		this.registerProvider(new OllamaProvider());
 		this.registerProvider(new GoogleProvider());
