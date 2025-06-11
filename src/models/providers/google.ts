@@ -8,9 +8,9 @@ export class GoogleProvider implements ILlmProvider {
 	readonly docsUrl: string = "https://ai.google.dev/gemini-api/docs/api-key";
 
 	private readonly models: ModelInfo[] = [
-		{ id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro" },
-		{ id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash" },
-		{ id: "gemini-1.0-pro", name: "Gemini 1.0 Pro" },
+		{ id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro", supportsTemperature: true },
+		{ id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash", supportsTemperature: true },
+		{ id: "gemini-1.0-pro", name: "Gemini 1.0 Pro", supportsTemperature: true },
 	];
 
 	getDefaultModelId(): string {
@@ -26,12 +26,25 @@ export class GoogleProvider implements ILlmProvider {
 	}
 
 	getClient(modelId: string, config: ClientConfig): BaseChatModel {
-		console.warn(`\x1b[43m\x1b[30mFYI\x1b[0m For Google Gemini, Scanorama relies on strong prompting to get JSON.`);
-		return new ChatGoogleGenerativeAI({
+		if (!process.env.GOOGLE_API_KEY) {
+			throw new Error("Missing GOOGLE_API_KEY for Google Gemini. See docs: " + this.docsUrl);
+		}
+
+		// The Agent.ts will handle applying .withStructuredOutput for JSON.
+		// We inform the user about this enhanced reliability.
+		console.log(
+			`\x1b[36mInfo:\x1b[0m For Google Gemini model '\x1b[1m${modelId}\x1b[0m', Scanorama will use schema-enforced structured output for reliable JSON.`
+		);
+
+		const clientParams: ConstructorParameters<typeof ChatGoogleGenerativeAI>[0] = {
 			apiKey: process.env.GOOGLE_API_KEY,
-			model: modelId,
-			temperature: config.temperature ?? 0.7,
+			model: modelId, // Use 'model' for Gemini
+			temperature: config.temperature ?? 0.7, // Scanorama's default or user override
+			// Do NOT set generationConfig here for global JSON mode.
+			// withStructuredOutput is preferred and handled in Agent.ts
 			...(config.providerClientOptions || {}),
-		});
+		};
+
+		return new ChatGoogleGenerativeAI(clientParams);
 	}
 }

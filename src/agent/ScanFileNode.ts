@@ -48,14 +48,15 @@ Look for patterns such as:
 - Java/Kotlin: Annotations like @Tool(name="...", description="...") or @McpTool(name="...", description="...").
 - C#: Attributes like [McpServerTool(Name="...", Description="...")] or [Tool(Name="...", Description="...")].
 
-For each tool found, provide its name and its exact description.
-The description is critical as it's the part that might be used for prompt injection SO YOU SHOULD RESPOND WITH THE COMPLETE DESCRIPTION OF THE TOOL.
+For each tool found, provide its name, its exact description and the function code (definition | body | content | ...etc).
+The description is critical as it's the part that might be used for prompt injection SO YOU SHOULD RESPOND WITH THE COMPLETE DESCRIPTION OF THE TOOL. Also don forget the function code of the tool because latter will be used to search for inconsistencies between the code execution and the description of the tool
 
-Respond with a single JSON object. This object should have a key named "tools" which contains an array of objects.
+RESPOND WITH A SINGLE JSON OBJECT. THIS OBJECT SHOULD HAVE A KEY NAMED "tools" WHICH CONTAINS AN ARRAY OF OBJECTS.
 Each object in the "tools" array should have the following structure:
 {
   "name": "tool_name_here",
-  "description": "tool_description_here"
+  "description": "tool_description_here",
+  "function": "function_definition_and_content_here",
 }
 
 IF NO MCP TOOLS ARE FOUND IN THIS FILE, THE "TOOLS" KEY SHOULD CONTAIN AN EMPTY JSON ARRAY [].
@@ -73,7 +74,7 @@ JSON OUTPUT (A SINGLE JSON OBJECT WITH A "TOOLS" KEY):
 		// console.log(`LLM raw response for ${filePathToScan}:`, response.content); // Optional: for debugging
 
 		let parsedResponse: unknown;
-		let extractedRaw: { name: string; description: string }[] = [];
+		let extractedRaw: { name: string; description: string, function: string }[] = [];
 
 		// Parse the response of the LLM if its in plain text
 		if (typeof response.content === 'string') {
@@ -118,6 +119,7 @@ JSON OUTPUT (A SINGLE JSON OBJECT WITH A "TOOLS" KEY):
 		const newTools: MCPTool[] = extractedRaw.map(tool => ({
 			name: String(tool.name || "Unknown Tool"),
 			description: String(tool.description || ""),
+			function: String(tool.function),
 			location: filePathToScan,
 		}));
 

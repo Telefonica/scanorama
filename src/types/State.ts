@@ -10,11 +10,13 @@ You should have received a copy of the GNU Lesser General Public License along w
 export interface MCPTool {
 	name: string;
 	description: string | null;
+	function: string | null; // function code
 	location: string; // file path for context
 }
 
 export interface AnalysisResult extends MCPTool {
 	injectionType: "Injection" | "No-Injection" | "Unknown";
 	explanation: string;
+	incongruent: string | null;
 }
 

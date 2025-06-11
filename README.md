@@ -22,8 +22,7 @@
 **Scanorama** is a command-line tool to perform static analysis of any MCP-based server (built with official MCP SDKs) and detect potential security issues. It generates a human-readable report that flags:
 
 - **Prompt injection**: Attempts to manipulate or exfiltrate data via crafted prompts.
-- **[IN PROGRESS] Malicious code**: Suspicious code patterns that may compromise the host.
-- **[IN PROGRESS] Incongruent code**: Code that deviates from expected functionality.
+- **Incongruent code**: Code that deviates from expected functionality.
 
 </br>
 

@@ -15,8 +15,8 @@ importers:
         specifier: ^0.3.55
         version: 0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3))
       '@langchain/google-genai':
-        specifier: ^0.2.9
-        version: 0.2.9(@langchain/core@0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3)))(zod@3.24.3)
+        specifier: ^0.2.10
+        version: 0.2.10(@langchain/core@0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3)))(zod@3.24.3)
       '@langchain/langgraph':
         specifier: ^0.2.71
         version: 0.2.71(@langchain/core@0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3)))(zod-to-json-schema@3.24.5(zod@3.24.3))
@@ -224,8 +224,8 @@ packages:
     resolution: {integrity: sha512-SojY2ugpT6t9eYfFB9Ysvyhhyh+KJTGXs50hdHUE9tAEQWp3WAwoxe4djwJnOZ6fSpWYdpFt2UT2ksHVDy2vXA==}
     engines: {node: '>=18'}
 
-  '@langchain/google-genai@0.2.9':
-    resolution: {integrity: sha512-AcHAD0VX8Qci5ApLYd6ojMTJUk4ZTeMQrsOYsOVv09sy3FtrLHkRxZXkb0qgtDS9EJ+w40904B+s6s2H9+HZmQ==}
+  '@langchain/google-genai@0.2.10':
+    resolution: {integrity: sha512-kIy0qhu7FAsShNTvuOx8uV+hf7mWk8OzJP5W9mjs1ovAIT1C9WqG1epkhexBfj4DAQfQ6E+m/oGtJ+CVsalspw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@langchain/core': '>=0.3.55 <0.4.0'
@@ -741,7 +741,7 @@ snapshots:
     transitivePeerDependencies:
       - openai
 
-  '@langchain/google-genai@0.2.9(@langchain/core@0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3)))(zod@3.24.3)':
+  '@langchain/google-genai@0.2.10(@langchain/core@0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3)))(zod@3.24.3)':
     dependencies:
       '@google/generative-ai': 0.24.1
       '@langchain/core': 0.3.55(openai@4.98.0(ws@8.18.2)(zod@3.24.3))
