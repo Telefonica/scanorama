@@ -8,9 +8,30 @@ export class GoogleProvider implements ILlmProvider {
 	readonly docsUrl: string = "https://ai.google.dev/gemini-api/docs/api-key";
 
 	private readonly models: ModelInfo[] = [
-		{ id: "gemini-1.5-pro-latest", name: "Gemini 1.5 Pro", supportsTemperature: true },
-		{ id: "gemini-1.5-flash-latest", name: "Gemini 1.5 Flash", supportsTemperature: true },
-		{ id: "gemini-1.0-pro", name: "Gemini 1.0 Pro", supportsTemperature: true },
+		{
+			id: "gemini-1.5-pro-latest",
+			name: "Gemini 1.5 Pro (Latest)",
+			description: "Google's most capable Gemini model for complex tasks.",
+			supportsTemperature: true
+		},
+		{
+			id: "gemini-1.5-flash-latest",
+			name: "Gemini 1.5 Flash (Latest)",
+			description: "Google's fast and versatile Gemini model for a balance of speed and capability.",
+			supportsTemperature: true
+		},
+		{
+			id: "gemini-1.0-pro",
+			name: "Gemini 1.0 Pro",
+			description: "The first production version of Gemini Pro. Often interchangeable with 'gemini-pro'.",
+			supportsTemperature: true
+		},
+		{ // Adding the common alias
+			id: "gemini-pro",
+			name: "Gemini Pro (Alias for 1.0 Pro)",
+			description: "Alias for the Gemini 1.0 Pro model.",
+			supportsTemperature: true
+		},
 	];
 
 	getDefaultModelId(): string {
