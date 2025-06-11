@@ -6,7 +6,6 @@ import type { ILlmProvider, ProviderSlug, ModelInfo, ClientConfig } from "./type
 import { DefaultModelIdError } from "./types";
 import { OpenAIProvider } from "./providers/openai";
 import { AzureProvider } from "./providers/azure";
-import { OllamaProvider } from "./providers/ollama";
 import { GoogleProvider } from "./providers/google";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 
@@ -17,7 +16,6 @@ export class ModelManager {
 		this.providers = new Map();
 		this.registerProvider(new OpenAIProvider());
 		this.registerProvider(new AzureProvider());
-		this.registerProvider(new OllamaProvider());
 		this.registerProvider(new GoogleProvider());
 	}
 

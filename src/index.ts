@@ -4,7 +4,6 @@
  * SPDX-FileCopyrightText: © 2025 Telefónica Innovación Digital S.L.
  * SPDX-License-Identifier: LGPL-3.0-or-later
  */
-
 import { Command, Option } from 'commander';
 import * as dotenv from 'dotenv';
 import simpleGit from 'simple-git';
@@ -34,31 +33,29 @@ const askYesNo = (question: string): Promise<boolean> => {
 
 
 const program = new Command();
-// ... (program options and listModels logic remain the same as your previous version)
 const providerChoices = modelManager.getAllProviders().map(p => p.slug);
 
 program
 	.option('-p, --path <folder>', 'Local folder to scan')
 	.option('-c, --clone <repo>', 'GitHub repo URL to clone and scan')
 	.option('-o, --output <file>', 'Write JSON report to file')
+	.option('--list-models', 'List available conceptual models and providers, then exit')
 	.addOption(
 		new Option('--provider <name>', 'LLM provider to use')
 			.choices(providerChoices)
 			.default('openai', 'OpenAI (default)')
 	)
-	.option('-m, --model <id>', 'Specific model ID to use (e.g., gpt-4o, claude-3-opus-20240229, or your Azure deployment/Ollama model name)')
-	.option('--list-models', 'List available conceptual models and providers, then exit')
+	.option('--model <id>', 'Specific model ID to use (e.g., gpt-4o)')
 	.option(
 		'--temperature <temp>',
 		'Set LLM temperature (e.g., 0.1 for deterministic, 0.7 for creative). ' +
-		'Note: This option is IGNORED for the Azure OpenAI provider; the Azure deployment\'s default temperature is always used. ' +
-		'Some other models/providers might also not support or might ignore this.',
+		'Note: This option is IGNORED for the Azure OpenAI provider' +
 		parseFloat
 	)
 	.option('-y, --yes', 'Automatically answer yes to all confirmation prompts (e.g., for unlisted models)') // New option
-	.description(`Scanorama is a command-line tool to perform static analysis of any MCP-based server\n(built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n\nBe CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under `)
+	.description(`Scanorama is a command-line tool to perform static analysis of any MCP-based server (built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n(Be CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under) `)
 	.usage("--clone https://github.com/user/repo.git --provider openai --model gpt-4o --output report.json")
-	.version("1.1.0");
+	.version("1.0.0");
 
 program.parse(process.argv);
 const opts = program.opts<{
@@ -86,14 +83,10 @@ if (opts.listModels) {
 		if (reqEnvs.length > 0) {
 			const coloredEnvs = reqEnvs.map(env => `\x1b[31m${env}\x1b[0m`).join(", ");
 			console.log(`  Required Environment Variables: ${coloredEnvs}`);
-		} else {
-			console.log(`  No specific API key environment variables required (e.g., Ollama).`);
 		}
 
 		console.log(`  \x1b[36mModels:\x1b[0m`);
-		if (provider.slug === 'ollama') {
-			console.log(`    For \x1b[32m${provider.friendlyName}\x1b[0m, specify your locally pulled model name using the \x1b[4m--model <your-ollama-model>\x1b[0m option.`);
-		} else if (provider.slug === 'azure') {
+		if (provider.slug === 'azure') {
 			console.log(`    For \x1b[32m${provider.friendlyName}\x1b[0m, you \x1b[1mMUST\x1b[0m specify your \x1b[4mAzure Deployment ID\x1b[0m using the \x1b[4m--model <your-deployment-id>\x1b[0m option.`);
 			console.log(`    \x1b[33mNote:\x1b[0m Scanorama does not send a temperature setting to Azure; your deployment's default temperature will be used.`);
 		}
@@ -101,14 +94,12 @@ if (opts.listModels) {
 		provider.getModels().forEach(m => {
 			let modelIdDisplay = m.id;
 			let defaultMarker = "";
-			if (provider.slug === 'ollama' && m.id === 'custom') {
-				modelIdDisplay = "<your-ollama-model>";
-			} else if (provider.slug === 'azure' && m.id.startsWith("example-")) {
+			if (provider.slug === 'azure' && m.id.startsWith("example-")) {
 				modelIdDisplay = "<your-deployment-id>";
 			}
 
 			try {
-				if (m.id === provider.getDefaultModelId() && provider.slug !== 'azure' && provider.slug !== 'ollama') {
+				if (m.id === provider.getDefaultModelId() && provider.slug !== 'azure') {
 					defaultMarker = " \x1b[1m\x1b[32m[DEFAULT]\x1b[0m";
 				}
 			} catch (e) { /* ignore */ }
@@ -135,18 +126,13 @@ if (opts.listModels) {
 
 		console.log(`\n\x1b[36mPreparing Scanorama with LLM Provider\x1b[0m: \x1b[1m\x1b[32m${provider.friendlyName}\x1b[0m`);
 		let modelDisplayName = modelInfo?.name || effectiveModelId;
-		if (provider.slug === 'ollama' && opts.model && (!modelInfo || modelInfo.id === 'custom')) {
-			modelDisplayName = `Ollama: ${opts.model}`; // Use the user-provided ollama model name
-		} else if (provider.slug === 'azure' && opts.model && !isExplicitlyListed) {
-			modelDisplayName = `Azure Deployment: ${opts.model}`; // Use the user-provided azure deployment name
+		if (provider.slug === 'azure' && opts.model && !isExplicitlyListed) {
+			modelDisplayName = `Azure Deployment: ${opts.model}`;
 		}
 		console.log(`\x1b[36mUsing Model ID\x1b[0m: \x1b[1m\x1b[32m${effectiveModelId}\x1b[0m` + (modelDisplayName !== effectiveModelId ? ` (\x1b[1m${modelDisplayName}\x1b[0m)` : ""));
 
 		// --- Confirmation for unlisted models ---
-		if (opts.model && !isExplicitlyListed && provider.slug !== 'ollama' && provider.slug !== 'azure') {
-			// For Ollama/Azure, `isExplicitlyListed` might be false if the user provides a custom ID not in our *conceptual* list,
-			// but these providers are designed to accept custom IDs, so we don't prompt for them here.
-			// We only prompt for providers like OpenAI, Anthropic, Google if the model ID is not in their specific known list.
+		if (opts.model && !isExplicitlyListed && provider.slug !== 'azure') {
 			console.warn(`\n\x1b[33mWarning:\x1b[0m The model ID "\x1b[1m${opts.model}\x1b[0m" for provider "\x1b[1m${provider.friendlyName}\x1b[0m" is not in Scanorama's pre-verified list.`);
 			console.warn(`This may lead to unexpected behavior or errors if the model ID is incorrect or the model has different capabilities.`);
 
@@ -200,21 +186,15 @@ if (opts.listModels) {
 			results.forEach(result => {
 				if (result.injectionType === "Injection") {
 					injectionCount++;
-					// Red cross emoji, then "Potential Injection in Tool:", then Bold Red tool name
 					console.log(`\n\x1b[31m\n❌ Potential Injection in Tool: \x1b[0m${result.name}`);
-					// Location in Red
 					console.log(`\x1b[31mLocation:\x1b[0m ${result.location}`);
-					// Full Description in Red
 					console.log(`\x1b[31mDescription: "${result.description || 'N/A'}" \x1b[0m`);
-					// Explanation in Yellow (to distinguish it slightly, but still indicate warning)
 					console.log(`\x1b[33mExplanation:\x1b[0m ${result.explanation}\n\n`);
 					if (result.incongruent) console.log(`Inconsistencies found!!!\n\x1b[33mInconsistencies:\x1b[0m ${result.incongruent}\n\n`);
 
 				} else if (result.injectionType === "No-Injection") {
-					// This part remains the same as your previous request for "No-Injection"
 					console.log(`\x1b[32m\n✅ \x1b[1m${result.name}\x1b[0m - No injection risks found. (\x1b[90m${result.location}\x1b[0m)`);
-				} else { // Unknown
-					// This part remains the same for "Unknown"
+				} else {
 					console.log(`\x1b[33m\n⚠️ \x1b[1m${result.name}\x1b[0m - Analysis result unknown. (\x1b[90m${result.location}\x1b[0m)`);
 					console.log(`  \x1b[90mDescription:\x1b[0m "${result.description ? result.description.substring(0, 100) + (result.description.length > 100 ? '...' : '') : 'N/A'}"`);
 					console.log(`  \x1b[33mExplanation:\x1b[0m ${result.explanation}`);
@@ -230,7 +210,7 @@ if (opts.listModels) {
 			}
 			console.log(`Total tools analyzed: ${results.length}`);
 		}
-		console.log("\x1b[0m"); // Reset color at the very end of report section
+		console.log("\x1b[0m");
 		// --- End Updated Report Printing ---
 		if (opts.output) {
 			const reportFilePath = path.resolve(opts.output);
