@@ -20,3 +20,4 @@ export interface AnalysisResult extends MCPTool {
 	incongruent: string | null;
 }
 
+

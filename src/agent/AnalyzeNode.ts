@@ -83,7 +83,7 @@ JSON Output(a single JSON object with an "analysisResults" key):
 			try {
 				parsedResponse = JSON.parse(response.content);
 			} catch (e) {
-				const jsonMatch = response.content.match(/```json\n([\s\S] *?) \n```/);
+				const jsonMatch = response.content.match(/```json\n([\s\S]*?)\n```/);
 				if (jsonMatch && jsonMatch[1]) {
 					try {
 						parsedResponse = JSON.parse(jsonMatch[1]);
