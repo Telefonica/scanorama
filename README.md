@@ -2,7 +2,7 @@
   <h1>Scanorama</h1>
   <p><strong>MCP prompt injection security scanner</strong></p>
   <p>
-    Scan local or remote codebases, get actionable security reports, and integrate with multiple LLM providers.
+    Scan local or remote codebases, get security reports before using MCP servers.
   </p>
   <p>
     <a href="https://www.npmjs.com/package/scanorama"><img src="https://img.shields.io/npm/v/scanorama.svg?style=flat-square" alt="npm version" /></a>
@@ -15,7 +15,7 @@
 
 Scanorama is a powerful command-line interface (CLI) tool designed for security professionals and developers to **statically analyze MCP server**. It intelligently scans `MCP server` source code *searching* for **malicious** or **unsafely** MCP servers.
 
-MCP tools descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for **prompt injection attacks**, leading to unintended agent behavior, data exfiltration, or other security risks. Scanorama helps you identify these threats proactively.
+MCP tools descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for `prompt injection attacks`, leading to `unintended agent behavior`, `data exfiltration`, or other security risks. Scanorama helps you identify these threats proactively.
 
 https://github.com/user-attachments/assets/c912b358-afdf-4cd7-85ea-c461907e9a67
 
@@ -23,7 +23,7 @@ https://github.com/user-attachments/assets/c912b358-afdf-4cd7-85ea-c461907e9a67
 
 *   🔎 **Deep Code Analysis:** Semantically understands code (not just syntactically)
 *   🎯 **Prompt Injection Detection:** Leverages LLMs to analyze extracted tool descriptions for common and sophisticated prompt injection patterns.
-*   💻 **Multi-Language Support:** Designed to work with all MCP SDKs: Python, TypeScript, Java, Kotlin, C# and ...
+*   💻 **Multi-Language Support:** Works with all MCP SDKs: Python, TypeScript, Java, Kotlin, C#...
 ```bash
 scanorama --clone https://github.com/someuser/vulnerable-mcp-tools.git --provider google --model gemini-1.5-flash-latest --output gemini_report.json
 ```
@@ -34,7 +34,7 @@ scanorama --path /path/to/your/mcp-project
 *   📄 **Clear Reporting:** Generates easy-to-understand console reports
 *   💾 **JSON Output:** `--ouput filename`
 *   🤖 **Multi-Provider LLM Support:** Choose from a range of LLM providers `--list-models`
-    *   -m, --model <id>: Specify the model ID for the chosen provider.
+    *   `-m, --model <id>`: Specify the model ID for the chosen provider.
 
         * For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
         * For Azure: This must be your specific Deployment ID.
@@ -43,7 +43,7 @@ scanorama --path /path/to/your/mcp-project
 
 ---
 
-## 🤔 What MCP?
+### What is MCP?
 
 The **Model Context Protocol (MCP)** is an emerging open standard that defines a universal interface for connecting Large Language Models (LLMs) to external data sources, tools, and services. The most popular standardized way for LLMs to interact with the outside world. [You can see more here](https://modelcontextprotocol.io/introduction)
 
@@ -58,7 +58,7 @@ A maliciously crafted tool description can contain hidden instructions designed 
 *   Instruct the agent to perform unauthorized actions.
 *   Manipulate other tools or data sources the agent interacts with.
 
-This is a form of **prompt injection**. Scanorama helps you identify such potentially "poisoned" tool descriptions before they can cause harm.
+This is a form of `prompt injection`. Scanorama helps you identify such potentially "poisoned" tool descriptions before they can cause harm.
 
 Research about how MCP tool description can be exploited to take control of LLM agents: [Understanding and Mitigating Prompt Injection in MCP-based Agents](https://github.com/alexgarabt/agents-poison) 
 
