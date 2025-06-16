@@ -15,6 +15,19 @@ import os from 'os';
 import readline from 'readline';
 import { modelManager, ProviderSlug, ClientConfig } from './models';
 
+console.log(`
+  ██████  ▄████▄   ▄▄▄       ███▄    █  ▒█████   ██▀███   ▄▄▄       ███▄ ▄███▓ ▄▄▄      
+▒██    ▒ ▒██▀ ▀█  ▒████▄     ██ ▀█   █ ▒██▒  ██▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒▒████▄    
+░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██ ░▄█ ▒▒██  ▀█▄  ▓██    ▓██░▒██  ▀█▄  
+  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▒██▀▀█▄  ░██▄▄▄▄██ ▒██    ▒██ ░██▄▄▄▄██ 
+▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒▒██░   ▓██░░ ████▓▒░░██▓ ▒██▒ ▓█   ▓██▒▒██▒   ░██▒ ▓█   ▓██▒
+▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒▓ ░▒▓░ ▒▒   ▓▒█░░ ▒░   ░  ░ ▒▒   ▓▒█░
+░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░   ░▒ ░ ▒░  ▒   ▒▒ ░░  ░      ░  ▒   ▒▒ ░
+░  ░  ░  ░          ░   ▒      ░   ░ ░ ░ ░ ░ ▒    ░░   ░   ░   ▒   ░      ░     ░   ▒   
+      ░  ░ ░            ░  ░         ░     ░ ░     ░           ░  ░       ░         ░  ░
+         ░                                                                              
+`);
+
 dotenv.config();
 
 const askYesNo = (question: string): Promise<boolean> => {
@@ -54,16 +67,6 @@ program
 	)
 	.option('-y, --yes', 'Automatically answer yes to all confirmation prompts (e.g., for unlisted models)') // New option
 	.description(`
-  ██████  ▄████▄   ▄▄▄       ███▄    █  ▒█████   ██▀███   ▄▄▄       ███▄ ▄███▓ ▄▄▄      
-▒██    ▒ ▒██▀ ▀█  ▒████▄     ██ ▀█   █ ▒██▒  ██▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒▒████▄    
-░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██ ░▄█ ▒▒██  ▀█▄  ▓██    ▓██░▒██  ▀█▄  
-  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▒██▀▀█▄  ░██▄▄▄▄██ ▒██    ▒██ ░██▄▄▄▄██ 
-▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒▒██░   ▓██░░ ████▓▒░░██▓ ▒██▒ ▓█   ▓██▒▒██▒   ░██▒ ▓█   ▓██▒
-▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒▓ ░▒▓░ ▒▒   ▓▒█░░ ▒░   ░  ░ ▒▒   ▓▒█░
-░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░   ░▒ ░ ▒░  ▒   ▒▒ ░░  ░      ░  ▒   ▒▒ ░
-░  ░  ░  ░          ░   ▒      ░   ░ ░ ░ ░ ░ ▒    ░░   ░   ░   ▒   ░      ░     ░   ▒   
-      ░  ░ ░            ░  ░         ░     ░ ░     ░           ░  ░       ░         ░  ░
-         ░                                                                              
                    
 Scanorama is a CLI tool to perform static analysis of any MCP-based server (built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n(Be CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under) `)
 	.usage("--clone https://github.com/user/repo.git --provider openai --model gpt-4o --output report.json")

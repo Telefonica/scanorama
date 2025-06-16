@@ -1,7 +1,18 @@
 <div align="center">
-  <img src="YOUR_SCANORAMA_LOGO_URL_HERE" alt="Scanorama Logo" width="150">  <!-- TODO: Add a cool logo! -->
   <h1>Scanorama</h1>
-  <p><strong>🛡️ CLI tool to Analyze MCP servers searching for prompt injection vulnerabilities 🛡️</strong></p>
+  <div aling="center">
+    ██████  ▄████▄   ▄▄▄       ███▄    █  ▒█████   ██▀███   ▄▄▄       ███▄ ▄███▓ ▄▄▄      
+▒██    ▒ ▒██▀ ▀█  ▒████▄     ██ ▀█   █ ▒██▒  ██▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒▒████▄    
+░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██ ░▄█ ▒▒██  ▀█▄  ▓██    ▓██░▒██  ▀█▄  
+  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▒██▀▀█▄  ░██▄▄▄▄██ ▒██    ▒██ ░██▄▄▄▄██ 
+▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒▒██░   ▓██░░ ████▓▒░░██▓ ▒██▒ ▓█   ▓██▒▒██▒   ░██▒ ▓█   ▓██▒
+▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒▓ ░▒▓░ ▒▒   ▓▒█░░ ▒░   ░  ░ ▒▒   ▓▒█░
+░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░   ░▒ ░ ▒░  ▒   ▒▒ ░░  ░      ░  ▒   ▒▒ ░
+░  ░  ░  ░          ░   ▒      ░   ░ ░ ░ ░ ░ ▒    ░░   ░   ░   ▒   ░      ░     ░   ▒   
+      ░  ░ ░            ░  ░         ░     ░ ░     ░           ░  ░       ░         ░  ░
+         ░                                                                              
+  </div>
+  <p><strong>MCP prompt injection security scanner</strong></p>
   <p>
     Scan local or remote codebases, get actionable security reports, and integrate with multiple LLM providers.
   </p>
@@ -18,7 +29,7 @@ Scanorama is a powerful command-line interface (CLI) tool designed for security 
 
 MCP tools descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for **prompt injection attacks**, leading to unintended agent behavior, data exfiltration, or other security risks. Scanorama helps you identify these threats proactively.
 
-TODO: INSERT VIDEO HERE
+https://github.com/user-attachments/assets/c912b358-afdf-4cd7-85ea-c461907e9a67
 
 **Key Features:**
 
@@ -179,6 +190,8 @@ scanorama [options]
 
 When Scanorama completes a scan, it will print a report to your console.
 
+![Report of the scan](./media/report.png)
+
 ✅ Safe Tools: Tools deemed "No-Injection" will be listed in green with a checkmark, including their name and location.
 ```bash
 ✅ MySafeTool - No injection risks found. (src/tools/safe.py)
@@ -197,7 +210,7 @@ When Scanorama completes a scan, it will print a report to your console.
 A summary at the end will tell you the total number of tools analyzed and how many potential injections were found.
 
 
-===
+---
 Disclaimer & Contact
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF ANY TYPE. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS COMPONENTS, INTEGRATION WITH THIRD-PARTY SOLUTIONS OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -209,7 +222,7 @@ THIS SOFTWARE DOESN'T HAVE A QA PROCESS. THIS SOFTWARE IS A PROOF OF CONCEPT AND
 For issues, feature requests, or contributions, please visit the GitHub Issues page.
 For other inquiries, contact LightingLab Telefonica Inovacion Digital.
 
+---
 <div align="center">
 Made with ❤️ by Telefónica Innovación Digital - LightingLab
 </div>
-```
