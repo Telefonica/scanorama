@@ -1,7 +1,7 @@
 <div align="center">
   <img src="YOUR_SCANORAMA_LOGO_URL_HERE" alt="Scanorama Logo" width="150">  <!-- TODO: Add a cool logo! -->
   <h1>Scanorama</h1>
-  <p><strong>🛡️ CLI to Analyze Model Context Protocol (MCP) Servers for Prompt Injection Vulnerabilities 🛡️</strong></p>
+  <p><strong>🛡️ CLI tool to Analyze MCP servers searching for prompt injection vulnerabilities 🛡️</strong></p>
   <p>
     Scan local or remote codebases, get actionable security reports, and integrate with multiple LLM providers.
   </p>
@@ -14,42 +14,43 @@
 
 ## 🚀 What is Scanorama?
 
-Scanorama is a powerful command-line interface (CLI) tool designed for security professionals and developers to **statically analyze Model Context Protocol (MCP) server implementations**. It intelligently scans your source code—whether local or from a GitHub repository—to detect potentially malicious or unsafely configured MCP tool descriptions.
+Scanorama is a powerful command-line interface (CLI) tool designed for security professionals and developers to **statically analyze MCP server**. It intelligently scans `MCP server` source code *searching* for **malicious** or **unsafely** MCP servers.
 
-These descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for **prompt injection attacks**, leading to unintended agent behavior, data exfiltration, or other security risks. Scanorama helps you identify these threats proactively.
+MCP tools descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for **prompt injection attacks**, leading to unintended agent behavior, data exfiltration, or other security risks. Scanorama helps you identify these threats proactively.
+
+TODO: INSERT VIDEO HERE
 
 **Key Features:**
 
-*   🔎 **Deep Code Analysis:** Semantically understands code (not just syntactically) using LLMs to find MCP tool definitions across various languages.
+*   🔎 **Deep Code Analysis:** Semantically understands code (not just syntactically)
 *   🎯 **Prompt Injection Detection:** Leverages LLMs to analyze extracted tool descriptions for common and sophisticated prompt injection patterns.
-*   💻 **Multi-Language Support:** Designed to work with MCP SDKs in Python, TypeScript, Java, Kotlin, C#, and more.
+*   💻 **Multi-Language Support:** Designed to work with all MCP SDKs: Python, TypeScript, Java, Kotlin, C# and ...
+```bash
+scanorama --clone https://github.com/someuser/vulnerable-mcp-tools.git --provider google --model gemini-1.5-flash-latest --output gemini_report.json
+```
 *   🔗 **Flexible Source Input:** Scan local directories or directly clone and analyze public GitHub repositories.
-*   📄 **Clear Reporting:** Generates easy-to-understand console reports, highlighting potential risks with color-coded severity.
-*   💾 **JSON Output:** Option to save detailed analysis results to a JSON file for integration with other tools or record-keeping.
-*   🤖 **Multi-Provider LLM Support:** Choose from a range of LLM providers like OpenAI, Google Gemini, Anthropic, Azure OpenAI, and local Ollama instances for analysis.
-*   ⚙️ **Configurable Analysis:** Adjust LLM temperature and select specific models for tailored analysis.
+```bash
+scanorama --path /path/to/your/mcp-project
+```
+*   📄 **Clear Reporting:** Generates easy-to-understand console reports
+*   💾 **JSON Output:** `--ouput filename`
+*   🤖 **Multi-Provider LLM Support:** Choose from a range of LLM providers `--list-models`
+    *   -m, --model <id>: Specify the model ID for the chosen provider.
+
+        * For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
+        * For Azure: This must be your specific Deployment ID.
+
+*   ⚙️ **Configurable Analysis:** Adjust LLM temperature and select specific models.
 
 ---
 
-## 🤔 What is the Model Context Protocol (MCP)?
+## 🤔 What MCP?
 
-The **Model Context Protocol (MCP)** is an emerging open standard that defines a universal interface for connecting Large Language Models (LLMs) to external data sources, tools, and services. Think of it like USB-C for AI: a standardized way for LLMs to interact with the outside world.
+The **Model Context Protocol (MCP)** is an emerging open standard that defines a universal interface for connecting Large Language Models (LLMs) to external data sources, tools, and services. The most popular standardized way for LLMs to interact with the outside world. [You can see more here](https://modelcontextprotocol.io/introduction)
 
-MCP enables:
+## ⚠️ Why scan MCP servers ?
 
-1.  **Contextual Data Exchange:** Applications can seamlessly share files, database records, or real-time data with an LLM.
-2.  **Tool Invocation:** LLMs can call external functions or APIs (e.g., search engines, code interpreters, custom business logic) through a defined protocol.
-3.  **Interoperability:** Developers can build tools or data sources once against the MCP standard, allowing them to be used by any MCP-compliant LLM agent.
-
-This standardization is crucial for building powerful, modular, and maintainable AI-driven applications.
-
----
-
-## ⚠️ Why Scan MCP Servers for Vulnerabilities?
-
-While MCP offers great flexibility, it also introduces a new attack surface. The descriptions of MCP tools are typically injected directly into an LLM agent's context (prompt) to inform the agent about the tool's capabilities and how to use it.
-
-**This is where the risk lies:**
+While MCP offers great flexibility, it also introduces a new attack surface. The descriptions of MCP tools can be injected directly into an LLM agent's context (prompt) and it allows third party agents take control of your agents.
 
 A maliciously crafted tool description can contain hidden instructions designed to:
 
@@ -60,19 +61,7 @@ A maliciously crafted tool description can contain hidden instructions designed 
 
 This is a form of **prompt injection**. Scanorama helps you identify such potentially "poisoned" tool descriptions before they can cause harm.
 
-For a deeper dive into how these vulnerabilities can be exploited, check out this research: [Understanding and Mitigating Prompt Injection in MCP-based Agents](https://github.com/alexgarabt/agents-poison) <!-- TODO: Replace with the actual link if different or more relevant -->
-
----
-
-## 🎬 Quick Demo & Visual Overview
-
-**(TODO: INSERT A GIF OR EMBED A SHORT VIDEO DEMONSTRATING SCANORAMA IN ACTION HERE)**
-
-This section will visually walk you through:
-1. Cloning a repository.
-2. Running Scanorama against it.
-3. Interpreting the console report.
-4. Viewing the JSON output.
+Research about how MCP tool description can be exploited to take control of LLM agents: [Understanding and Mitigating Prompt Injection in MCP-based Agents](https://github.com/alexgarabt/agents-poison) 
 
 ---
 
@@ -91,37 +80,48 @@ scanorama --version
 
 Alternatively, for development or to run from source:
 
+```bash
 git clone https://github.com/Telefonica/scanorama.git
 cd scanorama
 pnpm install  # Or npm install / yarn install
 pnpm build    # Or npm run build / yarn build
 pnpm start --help
-node dist/index.js --help
+```
 
-## 🛠️ Setting Up LLM Providers
+## 🛠️ Supported LLM providers
 
-Scanorama uses LLMs for its analysis. You need to configure API keys for the provider you wish to use. This is typically done via environment variables.
+Scanorama currently supports analysis using models from:
+
+*   🧠 OpenAI (e.g., GPT-4o, GPT-4 Turbo, GPT-3.5 Turbo)
+*   ☁️ Azure OpenAI (Use your specific deployment ID)
+*   🔍 Google Gemini (e.g., Gemini 1.5 Pro, Gemini 1.5 Flash)
+*   🤖 Anthropic (e.g., Claude 3 Opus, Sonnet, Haiku)
+*   Run scanorama --list-models for more details on conceptual models and setup.
+
+### Setting up Providers
+
+Scanorama uses LLMs for its intelligent analysis. You need to configure API keys for the provider you wish to use.
 
 Create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
-
-### Providers
-#### For OpenAI
-```bash
-OPENAI_API_KEY="sk-your_openai_api_key"
-```
 
 #### For Google Gemini
 ```bash
 GOOGLE_API_KEY="your_google_ai_studio_api_key"
 ```
 
+Google provide free api keys for personal use. You can check it in [aistudio.google.com](https://aistudio.google.com/apiKey)
+
+#### For OpenAI
+```bash
+OPENAI_API_KEY="your_openai_api_key"
+```
+
 #### For Azure OpenAI
 ```bash
 AZURE_OPENAI_API_KEY="your_azure_openai_key"
 AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com"
-AZURE_OPENAI_API_VERSION="your-api-version" # e.g., 2023-07-01-preview
+AZURE_OPENAI_API_VERSION="your-api-version" 
 ```
-
 For Azure, you MUST also specify your deployment ID using --model <your-deployment-id>  
 
 
@@ -131,7 +131,6 @@ See supported providers(env vars) & models to use:
 ```bash
 scanorama --list-models
 ```
-# TODO: ADD OUTPUT DISPLAY IMAGE
 
 ## ⚙️ Usage and Options
 Scanorama offers several options to customize your scans:
@@ -140,33 +139,31 @@ scanorama [options]
 ```
 ### Core Options:
 
-    * -p, --path <folder>: Analyze a local directory.
+    -p, --path <folder>: Analyze a local directory.
+        Example: scanorama --path ./my-mcp-server
 
-        * Example: scanorama --path ./my-mcp-server
+    -c, --clone <repo_url>: Clone and analyze a public GitHub repository.
+        Example: scanorama --clone https://github.com/someuser/example-mcp-project.git
 
-    * -c, --clone <repo_url>: Clone and analyze a public GitHub repository.
-        * Example: scanorama --clone https://github.com/someuser/example-mcp-project.git
-
-    * -o, --output <file>: Save the detailed analysis results to a JSON file.
-        * Example: scanorama --path . --output report.json
+    -o, --output <file>: Save the detailed analysis results to a JSON file.
+        Example: scanorama --path . --output report.json
 
 ### LLM Configuration Options:
 
-    * --provider <name>: Specify the LLM provider.
+    --provider <name>: Specify the LLM provider.
+        Choices: openai, google, azure.
+        Default: openai
+        Example: scanorama --path . --provider google
      
-        * Choices: openai, google, azure.
-        * Default: openai
-        * Example: scanorama --path . --provider google
-     
-    * -m, --model <id>: Specify the model ID for the chosen provider.
-        * For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
-        * For Azure: This must be your specific Deployment ID.
-        * Run scanorama --list-models to see conceptual models and defaults.
-        * Example: scanorama --path . --provider openai --model gpt-4o
+    -m, --model <id>: Specify the model ID for the chosen provider.
+        For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
+        For Azure: This must be your specific Deployment ID.
+        Run scanorama --list-models to see conceptual models and defaults.
+        Example: scanorama --path . --provider openai --model gpt-4o
 
-    * --temperature <temp>: Set the LLM's temperature (creativity). A float between 0.0 (deterministic) and 1
-        * Note for Azure: This option is IGNORED. Scanorama will always use the default temperature configured for your Azure deployment.
-        * Example: scanorama --path . --temperature 0.2
+    --temperature <temp>: Set the LLM's temperature (creativity). A float between 0.0 (deterministic) and 1
+        Note for Azure: This option is IGNORED. Scanorama will always use the default temperature configured for your Azure deployment.
+        Example: scanorama --path . --temperature 0.2
 
 ### Utility Options:
 
@@ -175,28 +172,8 @@ scanorama [options]
     * --help: Show the help message with all options.
     * --version: Display Scanorama's version.
 
-## 📖 Examples
 
-    1. Scan a Local Project using OpenAI (Default):
 
-# Ensure OPENAI_API_KEY is set in your environment or .env file
-```bash
-scanorama --path /path/to/your/mcp-project
-```
-
-    2. Scan a GitHub Repository using Google Gemini and output to JSON:
-
-# Ensure GOOGLE_API_KEY is set
-```bash
-scanorama --clone https://github.com/someuser/vulnerable-mcp-tools.git --provider google --model gemini-1.5-flash-latest --output gemini_report.json
-```
-
-    3. Scan an Azure OpenAI Deployment:
-
-# Ensure AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_VERSION are set
-```bash
-scanorama --path . --provider azure --model your-gpt4-deployment-id
-```
 
 ## 📊 Interpreting the Report
 
@@ -219,21 +196,6 @@ When Scanorama completes a scan, it will print a report to your console.
 
 A summary at the end will tell you the total number of tools analyzed and how many potential injections were found.
 
-## ⭐ Supported LLM Providers
-
-Scanorama currently supports analysis using models from:
-
-    * 🧠 OpenAI (e.g., GPT-4o, GPT-4 Turbo, GPT-3.5 Turbo)
-    * 
-    * ☁️ Azure OpenAI (Use your specific deployment ID)
-    * 
-    * 🔍 Google Gemini (e.g., Gemini 1.5 Pro, Gemini 1.5 Flash)
-    * 
-    * 🤖 Anthropic (e.g., Claude 3 Opus, Sonnet, Haiku)
-    * 
-    * 🦙 Ollama (Run models like Llama 3, Mistral, etc., locally)
-    * 
-    * Run scanorama --list-models for more details on conceptual models and setup.
 
 ===
 Disclaimer & Contact
