@@ -38,7 +38,7 @@ const providerChoices = modelManager.getAllProviders().map(p => p.slug);
 program
 	.option('-p, --path <folder>', 'Local folder to scan')
 	.option('-c, --clone <repo>', 'GitHub repo URL to clone and scan')
-	.option('-o, --output <file>', 'Write JSON report to file')
+	.option('-o, --output <file>', 'Write JSON report to file\n')
 	.option('--list-models', 'List available conceptual models and providers, then exit')
 	.addOption(
 		new Option('--provider <name>', 'LLM provider to use')
@@ -49,7 +49,7 @@ program
 	.option(
 		'--temperature <temp>',
 		'Set LLM temperature (e.g., 0.1 for deterministic, 0.7 for creative). ' +
-		'Note: This option is IGNORED for the Azure OpenAI provider' +
+		'Note: This option is IGNORED for the Azure OpenAI provider\n',
 		parseFloat
 	)
 	.option('-y, --yes', 'Automatically answer yes to all confirmation prompts (e.g., for unlisted models)') // New option
