@@ -1,12 +1,5 @@
 <div align="center">
   <h1>Scanorama</h1>
-  <div aling="center">
-.▄▄ ·  ▄▄·  ▄▄▄·  ▐ ▄       ▄▄▄   ▄▄▄· • ▌ ▄ ·.  ▄▄▄· 
-▐█ ▀. ▐█ ▌▪▐█ ▀█ •█▌▐█▪     ▀▄ █·▐█ ▀█ ·██ ▐███▪▐█ ▀█ 
-▄▀▀▀█▄██ ▄▄▄█▀▀█ ▐█▐▐▌ ▄█▀▄ ▐▀▀▄ ▄█▀▀█ ▐█ ▌▐▌▐█·▄█▀▀█ 
-▐█▄▪▐█▐███▌▐█ ▪▐▌██▐█▌▐█▌.▐▌▐█•█▌▐█ ▪▐▌██ ██▌▐█▌▐█ ▪▐▌
- ▀▀▀▀ ·▀▀▀  ▀  ▀ ▀▀ █▪ ▀█▄▀▪.▀  ▀ ▀  ▀ ▀▀  █▪▀▀▀ ▀  ▀ 
-  </div>
   <p><strong>MCP prompt injection security scanner</strong></p>
   <p>
     Scan local or remote codebases, get actionable security reports, and integrate with multiple LLM providers.
