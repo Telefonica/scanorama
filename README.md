@@ -13,7 +13,7 @@
 
 ## 🚀 What is Scanorama?
 
-Scanorama is a powerful command-line interface (CLI) tool designed for security professionals and developers to **statically analyze MCP server**. It intelligently scans `MCP server` source code *searching* for **malicious** or **unsafely** MCP servers.
+Scanorama is a powerful command-line interface (CLI) tool designed for security professionals and developers to **statically analyze MCP server**. It intelligently scans `MCP server` source code _searching_ for **malicious** or **unsafely** MCP servers.
 
 MCP tools descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for `prompt injection attacks`, leading to `unintended agent behavior`, `data exfiltration`, or other security risks. Scanorama helps you identify these threats proactively.
 
@@ -21,25 +21,30 @@ https://github.com/user-attachments/assets/c912b358-afdf-4cd7-85ea-c461907e9a67
 
 **Key Features:**
 
-*   🔎 **Deep Code Analysis:** Semantically understands code (not just syntactically)
-*   🎯 **Prompt Injection Detection:** Leverages LLMs to analyze extracted tool descriptions for common and sophisticated prompt injection patterns.
-*   💻 **Multi-Language Support:** Works with all MCP SDKs: Python, TypeScript, Java, Kotlin, C#...
+- 🔎 **Deep Code Analysis:** Semantically understands code (not just syntactically)
+- 🎯 **Prompt Injection Detection:** Leverages LLMs to analyze extracted tool descriptions for common and sophisticated prompt injection patterns.
+- 💻 **Multi-Language Support:** Works with all MCP SDKs: Python, TypeScript, Java, Kotlin, C#...
+
 ```bash
 scanorama --clone https://github.com/someuser/vulnerable-mcp-tools.git --provider google --model gemini-1.5-flash-latest --output gemini_report.json
 ```
-*   🔗 **Flexible Source Input:** Scan local directories or directly clone and analyze public GitHub repositories.
+
+- 🔗 **Flexible Source Input:** Scan local directories or directly clone and analyze public GitHub repositories.
+
 ```bash
 scanorama --path /path/to/your/mcp-project
 ```
-*   📄 **Clear Reporting:** Generates easy-to-understand console reports
-*   💾 **JSON Output:** `--ouput filename`
-*   🤖 **Multi-Provider LLM Support:** Choose from a range of LLM providers `--list-models`
-    *   `-m, --model <id>`: Specify the model ID for the chosen provider.
 
-        * For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
-        * For Azure: This must be your specific Deployment ID.
+- 📄 **Clear Reporting:** Generates easy-to-understand console reports
+- 💾 **JSON Output:** `--ouput filename`
+- 🤖 **Multi-Provider LLM Support:** Choose from a range of LLM providers `--list-models`
 
-*   ⚙️ **Configurable Analysis:** Adjust LLM temperature and select specific models.
+  - `-m, --model <id>`: Specify the model ID for the chosen provider.
+
+    - For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
+    - For Azure: This must be your specific Deployment ID.
+
+- ⚙️ **Configurable Analysis:** Adjust LLM temperature and select specific models.
 
 ---
 
@@ -53,14 +58,14 @@ While MCP offers great flexibility, it also introduces a new attack surface. The
 
 A maliciously crafted tool description can contain hidden instructions designed to:
 
-*   Hijack the agent's original purpose.
-*   Exfiltrate sensitive data processed by the agent.
-*   Instruct the agent to perform unauthorized actions.
-*   Manipulate other tools or data sources the agent interacts with.
+- Hijack the agent's original purpose.
+- Exfiltrate sensitive data processed by the agent.
+- Instruct the agent to perform unauthorized actions.
+- Manipulate other tools or data sources the agent interacts with.
 
 This is a form of `prompt injection`. Scanorama helps you identify such potentially "poisoned" tool descriptions before they can cause harm.
 
-Research about how MCP tool description can be exploited to take control of LLM agents: [Understanding and Mitigating Prompt Injection in MCP-based Agents](https://github.com/alexgarabt/agents-poison) 
+Research about how MCP tool description can be exploited to take control of LLM agents: [Understanding and Mitigating Prompt Injection in MCP-based Agents](https://github.com/alexgarabt/agents-poison)
 
 ---
 
@@ -73,6 +78,7 @@ npm install -g @telefonica/scanorama
 ```
 
 ## Verify the installation:
+
 ```bash
 scanorama --version
 ```
@@ -91,11 +97,11 @@ pnpm start --help
 
 Scanorama currently supports analysis using models from:
 
-*   🧠 OpenAI (e.g., GPT-4o, GPT-4 Turbo, GPT-3.5 Turbo)
-*   ☁️ Azure OpenAI (Use your specific deployment ID)
-*   🔍 Google Gemini (e.g., Gemini 1.5 Pro, Gemini 1.5 Flash)
-*   🤖 Anthropic (e.g., Claude 3 Opus, Sonnet, Haiku)
-*   Run scanorama --list-models for more details on conceptual models and setup.
+- 🧠 OpenAI (e.g., GPT-4o, GPT-4 Turbo, GPT-3.5 Turbo)
+- ☁️ Azure OpenAI (Use your specific deployment ID)
+- 🔍 Google Gemini (e.g., Gemini 1.5 Pro, Gemini 1.5 Flash)
+- 🤖 Anthropic (e.g., Claude 3 Opus, Sonnet, Haiku)
+- Run scanorama --list-models for more details on conceptual models and setup.
 
 ### Setting up Providers
 
@@ -104,6 +110,7 @@ Scanorama uses LLMs for its intelligent analysis. You need to configure API keys
 Create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
 
 #### For Google Gemini
+
 ```bash
 GOOGLE_API_KEY="your_google_ai_studio_api_key"
 ```
@@ -111,31 +118,37 @@ GOOGLE_API_KEY="your_google_ai_studio_api_key"
 Google provide free api keys for personal use. You can check it in [aistudio.google.com](https://aistudio.google.com/apiKey)
 
 #### For OpenAI
+
 ```bash
 OPENAI_API_KEY="your_openai_api_key"
 ```
 
 #### For Azure OpenAI
+
 ```bash
 AZURE_OPENAI_API_KEY="your_azure_openai_key"
 AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com"
-AZURE_OPENAI_API_VERSION="your-api-version" 
+AZURE_OPENAI_API_VERSION="your-api-version"
 ```
-For Azure, you MUST also specify your deployment ID using --model <your-deployment-id>  
 
+For Azure, you MUST also specify your deployment ID using --model <your-deployment-id>
 
 Scanorama will automatically load these variables if a .env file is present in the directory where you run the command.
 
 See supported providers(env vars) & models to use:
+
 ```bash
 scanorama --list-models
 ```
 
 ## ⚙️ Usage and Options
+
 Scanorama offers several options to customize your scans:
+
 ```bash
 scanorama [options]
 ```
+
 ### Core Options:
 
     -p, --path <folder>: Analyze a local directory.
@@ -153,7 +166,7 @@ scanorama [options]
         Choices: openai, google, azure.
         Default: openai
         Example: scanorama --path . --provider google
-     
+
     -m, --model <id>: Specify the model ID for the chosen provider.
         For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
         For Azure: This must be your specific Deployment ID.
@@ -171,9 +184,6 @@ scanorama [options]
     * --help: Show the help message with all options.
     * --version: Display Scanorama's version.
 
-
-
-
 ## 📊 Interpreting the Report
 
 When Scanorama completes a scan, it will print a report to your console.
@@ -181,6 +191,7 @@ When Scanorama completes a scan, it will print a report to your console.
 ![Report of the scan](./media/report.png)
 
 ✅ Safe Tools: Tools deemed "No-Injection" will be listed in green with a checkmark, including their name and location.
+
 ```bash
 ✅ MySafeTool - No injection risks found. (src/tools/safe.py)
 ```
@@ -194,11 +205,10 @@ When Scanorama completes a scan, it will print a report to your console.
   Explanation: The description contains an instruction to exfiltrate data to an external URL.
 ```
 
-
 A summary at the end will tell you the total number of tools analyzed and how many potential injections were found.
 
-
 ---
+
 Disclaimer & Contact
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF ANY TYPE. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS COMPONENTS, INTEGRATION WITH THIRD-PARTY SOLUTIONS OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -211,6 +221,7 @@ For issues, feature requests, or contributions, please visit the GitHub Issues p
 For other inquiries, contact LightingLab Telefonica Inovacion Digital.
 
 ---
+
 <div align="center">
 Made with ❤️ by Telefónica Innovación Digital - LightingLab
 </div>
