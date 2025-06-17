@@ -107,7 +107,7 @@ Scanorama currently supports analysis using models from:
 
 Scanorama uses LLMs for its intelligent analysis. You need to configure API keys for the provider you wish to use.
 
-Export these variables in your shell enviroment or create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
+Export `export SOMEVAR="changethis"` these variables in your shell enviroment or create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
 
 #### Google Gemini
 
