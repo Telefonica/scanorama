@@ -17,6 +17,8 @@ Scanorama is a powerful command-line interface (CLI) tool designed for security 
 
 MCP tools descriptions, when consumed by Large Language Model (LLM) agents, can be a vector for `prompt injection attacks`, leading to `unintended agent behavior`, `data exfiltration`, or other security risks. Scanorama helps you identify these threats proactively.
 
+[Understanding and Mitigating Prompt Injection in MCP-based Agents](https://github.com/alexgarabt/agents-poison)
+
 https://github.com/user-attachments/assets/c912b358-afdf-4cd7-85ea-c461907e9a67
 
 **Key Features:**
