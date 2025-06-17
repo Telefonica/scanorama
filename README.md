@@ -102,20 +102,21 @@ Scanorama currently supports analysis using models from:
 Scanorama uses LLMs for its intelligent analysis. You need to configure API keys for the provider you wish to use.
 
 Create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
+**You should export these variables in your shell**
 
-#### For Google Gemini
+#### Using Google Gemini
 ```bash
 GOOGLE_API_KEY="your_google_ai_studio_api_key"
 ```
 
 Google provide free api keys for personal use. You can check it in [aistudio.google.com](https://aistudio.google.com/apiKey)
 
-#### For OpenAI
+#### Using OpenAI
 ```bash
 OPENAI_API_KEY="your_openai_api_key"
 ```
 
-#### For Azure OpenAI
+#### Using Azure OpenAI
 ```bash
 AZURE_OPENAI_API_KEY="your_azure_openai_key"
 AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com"
