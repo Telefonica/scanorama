@@ -1,59 +1,62 @@
 {
-	"name": "scanorama",
-	"version": "1.0.0",
-	"description": "Scan a MCP repositories searching for prompt injection in tool descriptions that could lead to modifications in agents default behaviors",
-	"homepage": "https://github.com/Telefonica/scanorama/",
-	"main": "dist/index.js",
-	"bin": "dist/index.js",
-	"scripts": {
-		"build": "tsc",
-		"start": "node dist/index.js",
-		"prepublishOnly": "pnpm build"
-	},
-	"packageManager": "pnpm@10.6.5",
-	"dependencies": {
-		"@langchain/anthropic": "^0.3.20",
-		"@langchain/core": "^0.3.55",
-		"@langchain/google-genai": "^0.2.10",
-		"@langchain/langgraph": "^0.2.71",
-		"@langchain/ollama": "^0.2.0",
-		"@langchain/openai": "^0.5.10",
-		"commander": "^13.1.0",
-		"dotenv": "^16.5.0",
-		"simple-git": "^3.27.0"
-	},
-	"devDependencies": {
-		"@types/node": "^22.15.3",
-		"tsx": "^4.19.4",
-		"typescript": "^5.8.3"
-	},
-	"files": [
-		"dist",
-		"README.md",
-		"LICENSE"
-	],
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Telefonica/scanorama"
-	},
-	"keywords": [
-		"mcp",
-		"prompt injection",
-		"security",
-		"llm",
-		"langchain",
-		"langgraph",
-		"cli",
-		"cibersecurity",
-		"mcp agent"
-	],
-	"author": "LightingLab Telefonica Inovacion Digital <lightinglab@telefonica.com> (https://telefonica.com)",
-	"license": "LGPL 3.0",
-	"bugs": {
-		"url": "https://github.com/Telefonica/scanorama/issues",
-		"email": "lightinglab@telefonica.com"
-	}
+  "name": "@telefonica/scanorama",
+  "version": "1.0.0",
+  "description": "Scan a MCP repositories searching for prompt injection in tool descriptions that could lead to modifications in agents default behaviors",
+  "homepage": "https://github.com/Telefonica/scanorama/",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prepublishOnly": "pnpm build"
+  },
+  "packageManager": "pnpm@10.6.5",
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.20",
+    "@langchain/core": "^0.3.55",
+    "@langchain/google-genai": "^0.2.10",
+    "@langchain/langgraph": "^0.2.71",
+    "@langchain/ollama": "^0.2.0",
+    "@langchain/openai": "^0.5.10",
+    "commander": "^13.1.0",
+    "dotenv": "^16.5.0",
+    "simple-git": "^3.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/scanorama"
+  },
+  "keywords": [
+    "mcp",
+    "prompt injection",
+    "security",
+    "llm",
+    "langchain",
+    "langgraph",
+    "cli",
+    "cibersecurity",
+    "mcp agent"
+  ],
+  "author": "LightingLab Telefonica Inovacion Digital <lightinglab@telefonica.com> (https://telefonica.com)",
+  "license": "LGPL 3.0",
+  "bugs": {
+    "url": "https://github.com/Telefonica/scanorama/issues",
+    "email": "lightinglab@telefonica.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
