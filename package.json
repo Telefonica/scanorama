@@ -1,6 +1,6 @@
 {
   "name": "@telefonica/scanorama",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scan a MCP repositories searching for prompt injection in tool descriptions that could lead to modifications in agents default behaviors",
   "homepage": "https://github.com/Telefonica/scanorama/",
   "main": "dist/index.js",
