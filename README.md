@@ -107,12 +107,19 @@ Scanorama currently supports analysis using models from:
 
 Scanorama uses LLMs for its intelligent analysis. You need to configure API keys for the provider you wish to use.
 
-Export `export SOMEVAR="changethis"` these variables in your shell enviroment or create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
+Export these variables in your shell enviroment or create a .env file in your project's root directory (or ensure the variables are set in your **shell environment**):
+```bash
+SOMEVAR="changethis"
+```
 
 #### Google Gemini
 
 ```bash
 GOOGLE_API_KEY="your_google_ai_studio_api_key"
+```
+in the .env or in the `shell`
+```bash
+export GOOGLE_API_KEY="your_google_ai_studio_api_key"
 ```
 
 Google provide free api keys for personal use. You can check it in [aistudio.google.com](https://aistudio.google.com/apiKey)
@@ -122,6 +129,10 @@ Google provide free api keys for personal use. You can check it in [aistudio.goo
 ```bash
 OPENAI_API_KEY="your_openai_api_key"
 ```
+in the .env or in the `shell`
+```bash
+export OPENAI_API_KEY="your_openai_api_key"
+```
 
 #### Azure OpenAI
 
@@ -129,6 +140,12 @@ OPENAI_API_KEY="your_openai_api_key"
 AZURE_OPENAI_API_KEY="your_azure_openai_key"
 AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com"
 AZURE_OPENAI_API_VERSION="your-api-version"
+```
+in the .env or in the `shell`
+```bash
+export AZURE_OPENAI_API_KEY="your_azure_openai_key"
+export AZURE_OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com"
+export AZURE_OPENAI_API_VERSION="your-api-version"
 ```
 
 For Azure, you MUST also specify your deployment ID using --model <your-deployment-id>
@@ -168,7 +185,7 @@ scanorama [options]
         Example: scanorama --path . --provider google
 
     -m, --model <id>: Specify the model ID for the chosen provider.
-        For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, claude-3-haiku-20240307.
+        For OpenAI, Google, Anthropic: Use a model ID like gpt-4o, gemini-1.5-flash-latest, ...
         For Azure: This must be your specific Deployment ID.
         Run scanorama --list-models to see conceptual models and defaults.
         Example: scanorama --path . --provider openai --model gpt-4o
