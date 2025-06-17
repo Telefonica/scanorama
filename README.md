@@ -5,7 +5,7 @@
     Scan local or remote codebases, get security reports before using MCP servers.
   </p>
   <p>
-    <a href="https://www.npmjs.com/package/scanorama"><img src="https://img.shields.io/npm/v/scanorama.svg?style=flat-square" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/@telefonica/scanorama"><img src="https://img.shields.io/npm/v/@telefonica/scanorama.svg?style=flat-square" alt="npm version" /></a>
     <a href="https://github.com/Telefonica/scanorama/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Telefonica/scanorama.svg?style=flat-square" alt="license" /></a>
     <!-- TODO: Add other badges like build status, downloads, etc. -->
   </p>
