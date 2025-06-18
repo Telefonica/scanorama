@@ -198,24 +198,34 @@ if (opts.listModels) {
 			console.log("\x1b[32m✅ No MCP tools found or no risks identified in analyzed tools.\x1b[0m");
 		} else {
 			let injectionCount = 0;
-			results.forEach(result => {
-				if (result.injectionType === "Injection") {
-					injectionCount++;
-					console.log(`\n\x1b[31m\n❌ Potential Injection in Tool: \x1b[0m${result.name}`);
-					console.log(`\x1b[31mLocation:\x1b[0m ${result.location}`);
-					console.log(`\x1b[31mDescription: "${result.description || 'N/A'}" \x1b[0m`);
-					console.log(`\x1b[33mExplanation:\x1b[0m ${result.explanation}\n\n`);
-					if (result.incongruent) console.log(`Inconsistencies found!!!\n\x1b[33mInconsistencies:\x1b[0m ${result.incongruent}\n\n`);
+			results
+				.filter(r => r.injectionType !== "Injection")
+				.concat(
+					results.filter(r => r.injectionType === "Injection")
+				)
+				.forEach(result => {
+					if (result.injectionType === "Injection") {
+						injectionCount++;
+						console.log(`\n\x1b[31m❌ Potential Injection in Tool: \x1b[0m${result.name}`);
+						console.log(`\x1b[31mLocation:\x1b[0m ${result.location}`);
+						console.log(`\x1b[31mDescription: "${result.description || 'N/A'}"\x1b[0m`);
+						console.log(`\x1b[33mExplanation:\x1b[0m ${result.explanation}`);
+						if (result.incongruent) console.log(`\x1b[33mInconsistencies found!!!:\x1b[0m ${result.incongruent}\n`);
+						console.log();
 
-				} else if (result.injectionType === "No-Injection") {
-					console.log(`\x1b[32m\n✅ \x1b[1m${result.name}\x1b[0m - No injection risks found. (\x1b[90m${result.location}\x1b[0m)`);
-				} else {
-					console.log(`\x1b[33m\n⚠️ \x1b[1m${result.name}\x1b[0m - Analysis result unknown. (\x1b[90m${result.location}\x1b[0m)`);
-					console.log(`  \x1b[90mDescription:\x1b[0m "${result.description ? result.description.substring(0, 100) + (result.description.length > 100 ? '...' : '') : 'N/A'}"`);
-					console.log(`  \x1b[33mExplanation:\x1b[0m ${result.explanation}`);
-					if (result.incongruent) console.log(`Inconsistencies found!!!\n\x1b[33mInconsistencies:\x1b[0m ${result.incongruent}\n\n`);
-				}
-			});
+					} else if (result.injectionType === "No-Injection") {
+						console.log(`\n\x1b[32m✅\x1b[1m${result.name}\x1b[0m - No injection risks found. (\x1b[90m${result.location}\x1b[0m)`);
+						if (result.incongruent) console.log(`\x1b[33mInconsistencies found!!!:\x1b[0m ${result.incongruent}\n`);
+						console.log();
+
+					} else {
+						console.log(`\n\x1b[33m⚠️\x1b[1m${result.name}\x1b[0m - Analysis result unknown. (\x1b[90m${result.location}\x1b[0m)`);
+						console.log(`\x1b[90mDescription:\x1b[0m "${result.description ? result.description.substring(0, 100) + (result.description.length > 100 ? '...' : '') : 'N/A'}"`);
+						console.log(`\x1b[33mExplanation:\x1b[0m ${result.explanation}`);
+						if (result.incongruent) console.log(`\x1b[33mInconsistencies found!!!:\x1b[0m ${result.incongruent}\n`);
+						console.log();
+					}
+				});
 
 			console.log("\n\x1b[1m--- Summary ---");
 			if (injectionCount > 0) {
@@ -230,7 +240,7 @@ if (opts.listModels) {
 		if (opts.output) {
 			const reportFilePath = path.resolve(opts.output);
 			fs.writeFileSync(reportFilePath, JSON.stringify(results, null, 2));
-			console.log(`\n\x1b[36mReport written to ${reportFilePath}\x1b[0m`);
+			console.log(`\x1b[36mReport written to ${reportFilePath}\x1b[0m`);
 		}
 
 
