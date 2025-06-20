@@ -70,7 +70,7 @@ program
                    
 Scanorama is a CLI tool to perform static analysis of any MCP-based server (built with official MCP SDKs) and detect potential security issues.\nIt generates a human-readable report that flags.\n(Be CAREFULL with DEEPTH of a local path or a repository because the tool will recursively find all source files under) `)
 	.usage("--clone https://github.com/user/repo.git --provider openai --model gpt-4o --output report.json")
-	.version("1.0.0");
+	.version("1.0.2");
 
 program.parse(process.argv);
 const opts = program.opts<{
